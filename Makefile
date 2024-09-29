@@ -3,7 +3,9 @@ CONFIGS := $(wildcard *.yaml)
 
 .PHONY: $(CONFIGS)
 
-all: $(CONFIGS)
+all: setup $(CONFIGS)
+
+setup:
 	mkdir -p $(OUTPUT)
 
 $(CONFIGS):
