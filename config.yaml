@@ -1,0 +1,23 @@
+name: ttypty
+output: "."
+architecture: "aarch64"
+world: "world"
+tag: 3.20.3
+repository:
+  url: "https://dl-cdn.alpinelinux.org/alpine/{{ $.Tag }}"
+  repositories: ["main", "community"]  
+timestamp: "2006-01-02"
+source:
+  remote: "https://gitlab.alpinelinux.org/alpine/aports"
+  directory: "scripts"
+  template: |
+    profile_{{ $.Name }}() {
+      profile_standard
+      title='{{ $.Name }}'
+      desc='{{ $.Name }} personal spin iso'
+      kernel_flavors='virt'
+      profile_abbrev='{{ $.Name }}'
+      aarch='{{ $.Arch }}'
+      kernel_addons=
+      apks="$apks {{ $.World }}"
+    }
