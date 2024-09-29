@@ -22,6 +22,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.23
+      - name: "deps"
+        run: apk add git make
       - name: "setup-keys"
         env:
           ISO_PRIVKEY: ${{secrets.ALPINE_ISO_RSA_KEY}}
@@ -34,4 +36,9 @@ jobs:
           echo "PACKAGER_PRIVKEY=\"$HOME/$ISO_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
           cp "$HOME/.abuild/$ISO_KEY_NAME.pub" "/etc/apk/keys/"
       - name: "run"
-        run: go run main.go --config config.yaml
+        run: make
+      - name: archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: alpine-iso
+          path: "build/"

@@ -1,5 +1,5 @@
 name: ttypty
-output: "."
+output: "build"
 architecture: "aarch64"
 commands:
   world: ["cat", "world"]
