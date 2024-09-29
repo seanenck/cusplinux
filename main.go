@@ -60,9 +60,14 @@ func run() error {
 	did := false
 	isDebug := *debug
 	to := *output
+	tmp, err := os.MkdirTemp("", "alpine-iso.")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(tmp)
 	for idx := range cfg.Tags {
 		did = true
-		if err := cfg.run(idx, isDebug, to); err != nil {
+		if err := cfg.run(idx, isDebug, tmp, to); err != nil {
 			return err
 		}
 	}
@@ -72,12 +77,8 @@ func run() error {
 	return nil
 }
 
-func (cfg Config) run(idx int, debug bool, to string) error {
-	dir, err := os.MkdirTemp("", "alpine-iso.")
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(dir)
+func (cfg Config) run(idx int, debug bool, dir, to string) error {
+	first := idx == 0
 	var tag string
 	tag = cfg.Tags[idx]
 	rawTag := tag
@@ -150,12 +151,14 @@ func (cfg Config) run(idx int, debug bool, to string) error {
 	}
 
 	clone := filepath.Join(dir, "aports")
-	cmd := exec.Command("git", "clone", "--depth=1", cfg.Source.Remote, clone)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Dir = dir
-	if err := cmd.Run(); err != nil {
-		return err
+	if first {
+		cmd := exec.Command("git", "clone", "--depth=1", cfg.Source.Remote, clone)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Dir = dir
+		if err := cmd.Run(); err != nil {
+			return err
+		}
 	}
 	root := filepath.Join(clone, cfg.Source.Directory)
 	profile := filepath.Join(root, fmt.Sprintf("mkimg.%s.sh", cfg.Name))
@@ -164,8 +167,10 @@ func (cfg Config) run(idx int, debug bool, to string) error {
 	}
 
 	out := filepath.Join(dir, "iso")
-	if err := os.Mkdir(out, 0o755); err != nil {
-		return err
+	if first {
+		if err := os.Mkdir(out, 0o755); err != nil {
+			return err
+		}
 	}
 	args := []string{
 		filepath.Join(root, "mkimage.sh"),
@@ -178,7 +183,7 @@ func (cfg Config) run(idx int, debug bool, to string) error {
 	if debug {
 		fmt.Printf("mkimage arguments: %v\n", args)
 	}
-	cmd = exec.Command("sh", args...)
+	cmd := exec.Command("sh", args...)
 	cmd.Dir = dir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
