@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
-	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -32,8 +31,7 @@ type (
 			Directory string `yaml:"directory"`
 			Template  string `yaml:"template"`
 		} `yaml:"source"`
-		Commands  map[string][]string `yaml:"commands"`
-		Timestamp string              `yaml:"timestamp"`
+		Commands map[string][]string `yaml:"commands"`
 	}
 )
 
@@ -166,15 +164,9 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 		return err
 	}
 
-	out := filepath.Join(dir, "iso")
-	if first {
-		if err := os.Mkdir(out, 0o755); err != nil {
-			return err
-		}
-	}
 	args := []string{
 		filepath.Join(root, "mkimage.sh"),
-		"--outdir", out,
+		"--outdir", to,
 		"--arch", cfg.Architecture,
 		"--profile", cfg.Name,
 		"--tag", rawTag,
@@ -189,26 +181,6 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return err
-	}
-	files, err := os.ReadDir(out)
-	if err != nil {
-		return nil
-	}
-	found := false
-	now := time.Now().Format(cfg.Timestamp)
-	for _, f := range files {
-		name := f.Name()
-		if strings.HasSuffix(name, ".iso") {
-			found = true
-			dest := filepath.Join(to, fmt.Sprintf("%s.%s", now, name))
-			fmt.Printf("artifact: %s (-> %s)\n", name, dest)
-			if err := exec.Command("mv", filepath.Join(out, name), dest).Run(); err != nil {
-				return err
-			}
-		}
-	}
-	if !found {
-		return errors.New("no built iso found?")
 	}
 	return nil
 }

@@ -7,7 +7,6 @@ tags:
 repository:
   url: "https://dl-cdn.alpinelinux.org/alpine/{{ $.Tag }}"
   repositories: ["main", "community"]  
-timestamp: "2006-01-02"
 source:
   remote: "https://gitlab.alpinelinux.org/alpine/aports"
   directory: "scripts"
