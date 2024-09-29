@@ -3,7 +3,8 @@ output: "build"
 architecture: "aarch64"
 commands:
   world: ["cat", "world"]
-tag: 3.20.3
+tag:
+  - 3.20.3
 repository:
   url: "https://dl-cdn.alpinelinux.org/alpine/{{ $.Tag }}"
   repositories: ["main", "community"]  

@@ -23,7 +23,7 @@ jobs:
         with:
           go-version: 1.23
       - name: "deps"
-        run: apk add git make
+        run: apk add git make alpine-sdk mtools dosfstools alpine-conf syslinux xorriso squashfs-tools grub grub-efi doas
       - name: "setup-keys"
         env:
           ISO_PRIVKEY: ${{secrets.ALPINE_ISO_RSA_KEY}}

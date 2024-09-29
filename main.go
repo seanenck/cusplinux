@@ -18,7 +18,7 @@ import (
 
 type (
 	Config struct {
-		Tag        string `yaml:"tag"`
+		Tags       []string `yaml:"tag"`
 		Repository struct {
 			URL          string   `yaml:"url"`
 			Repositories []string `yaml:"repositories"`
@@ -45,7 +45,6 @@ func main() {
 
 func run() error {
 	inConfig := flag.String("config", "", "configuration file")
-	inTag := flag.String("tag", "", "alpine tag")
 	flag.Parse()
 	b, err := os.ReadFile(*inConfig)
 	if err != nil {
@@ -55,17 +54,27 @@ func run() error {
 	if err := yaml.Unmarshal(b, &cfg); err != nil {
 		return err
 	}
+	did := false
+	for idx := range cfg.Tags {
+		did = true
+		if err := cfg.run(idx); err != nil {
+			return err
+		}
+	}
+	if !did {
+		return errors.New("no tags processed")
+	}
+	return nil
+}
 
+func (cfg Config) run(idx int) error {
 	dir, err := os.MkdirTemp("", "alpine-iso.")
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(dir)
 	var tag string
-	inputTag := *inTag
-	if inputTag == "" {
-		tag = cfg.Tag
-	}
+	tag = cfg.Tags[idx]
 	rawTag := tag
 	if strings.Contains(rawTag, ".") {
 		parts := strings.Split(tag, ".")
