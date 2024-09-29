@@ -20,7 +20,7 @@ import (
 type (
 	// Config handles input ISO build configurations
 	Config struct {
-		Tags       []string `yaml:"tag"`
+		Tags       []string `yaml:"tags"`
 		Repository struct {
 			URL          string   `yaml:"url"`
 			Repositories []string `yaml:"repositories"`

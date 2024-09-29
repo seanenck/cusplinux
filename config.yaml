@@ -2,7 +2,7 @@ name: ttypty
 architecture: "aarch64"
 commands:
   world: ["cat", "world"]
-tag:
+tags:
   - 3.20.3
 repository:
   url: "https://dl-cdn.alpinelinux.org/alpine/{{ $.Tag }}"
