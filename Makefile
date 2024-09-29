@@ -1,8 +1,13 @@
-OUTPUT := build/
+OUTPUT  := build/
+CONFIGS := $(wildcard *.yaml)
 
-all:
+.PHONY: $(CONFIGS)
+
+all: $(CONFIGS)
 	mkdir -p $(OUTPUT)
-	go run main.go --config config.yaml --output $(PWD)/$(OUTPUT)
+
+$(CONFIGS):
+	@go run main.go --config $@ --output $(PWD)/$(OUTPUT)
 
 clean:
 	rm -rf $(OUTPUT)
