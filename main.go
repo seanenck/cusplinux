@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"iter"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -27,13 +26,13 @@ type (
 		Architecture string `yaml:"architecture"`
 		Name         string `yaml:"name"`
 		Source       struct {
-			Remote    string   `yaml:"remote"`
-			Directory string   `yaml:"directory"`
-			Template  []string `yaml:"template"`
+			Remote    string `yaml:"remote"`
+			Directory string `yaml:"directory"`
+			Template  string `yaml:"template"`
 		} `yaml:"source"`
-		Output    string `yaml:"output"`
-		World     string `yaml:"world"`
-		Timestamp string `yaml:"timestamp"`
+		Output    string              `yaml:"output"`
+		Commands  map[string][]string `yaml:"commands"`
+		Timestamp string              `yaml:"timestamp"`
 	}
 )
 
@@ -84,23 +83,33 @@ func run() error {
 			return fmt.Errorf("unknown version/not edge: %s", rawTag)
 		}
 	}
-	i, err := readFileToTrimmedLines(cfg.World)
-	if err != nil {
-		return err
-	}
-	var world []string
-	for line := range i {
-		if line != "" {
-			world = append(world, line)
+	cmds := make(map[string][]string)
+	if cfg.Commands != nil {
+		for n, c := range cfg.Commands {
+			var exe string
+			var args []string
+			switch len(c) {
+			case 0:
+				return fmt.Errorf("command has not executable settings")
+			case 1:
+			default:
+				args = c[1:]
+			}
+			exe = c[0]
+			t, err := exec.Command(exe, args...).Output()
+			if err != nil {
+				return err
+			}
+			cmds[n] = strings.Split(string(t), "\n")
 		}
 	}
 	obj := struct {
-		Name  string
-		Arch  string
-		World string
-		Tag   string
-	}{cfg.Name, cfg.Architecture, strings.Join(world, " "), tag}
-	t, err := template.New("t").Parse(strings.Join(cfg.Source.Template, "\n"))
+		Name     string
+		Arch     string
+		Tag      string
+		Commands map[string][]string
+	}{cfg.Name, cfg.Architecture, tag, cmds}
+	t, err := template.New("t").Parse(cfg.Source.Template)
 	if err != nil {
 		return err
 	}
@@ -180,20 +189,4 @@ func run() error {
 		return errors.New("no built iso found?")
 	}
 	return nil
-}
-
-func readFileToTrimmedLines(file string) (iter.Seq[string], error) {
-	b, err := os.ReadFile(file)
-	if err != nil {
-		return nil, err
-	}
-	text := strings.Split(string(b), "\n")
-	return func(yield func(f string) bool) {
-		for _, line := range text {
-			t := strings.TrimSpace(line)
-			if !yield(t) {
-				return
-			}
-		}
-	}, nil
 }

@@ -1,7 +1,8 @@
 name: ttypty
 output: "."
 architecture: "aarch64"
-world: "world"
+commands:
+  world: ["cat", "world"]
 tag: 3.20.3
 repository:
   url: "https://dl-cdn.alpinelinux.org/alpine/{{ $.Tag }}"
@@ -19,5 +20,5 @@ source:
       profile_abbrev='{{ $.Name }}'
       aarch='{{ $.Arch }}'
       kernel_addons=
-      apks="$apks {{ $.World }}"
+      apks="$apks{{range $i, $a := index $.Commands "world" }} {{ $a }}{{end}}"
     }
