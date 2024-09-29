@@ -18,13 +18,13 @@ jobs:
       image: alpine:latest
     steps:
       - uses: actions/checkout@v4
-      - name: go
+      - name: "setup go"
         uses: actions/setup-go@v5
         with:
           go-version: 1.23
-      - name: "deps"
+      - name: "install deps"
         run: apk add git make alpine-sdk mtools dosfstools alpine-conf syslinux xorriso squashfs-tools grub grub-efi doas
-      - name: "setup-keys"
+      - name: "setup keys"
         env:
           ISO_PRIVKEY: ${{secrets.ALPINE_ISO_RSA_KEY}}
           ISO_PUBKEY: ${{secrets.ALPINE_ISO_RSA_KEY_PUBLIC}}
@@ -33,11 +33,11 @@ jobs:
           mkdir -p "$HOME/.abuild"
           echo "$ISO_PRIVKEY" > "$HOME/.abuild/$ISO_KEY_NAME"
           echo "$ISO_PUBKEY" > "$HOME/.abuild/$ISO_KEY_NAME.pub"
-          echo "PACKAGER_PRIVKEY=\"$HOME/$ISO_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
+          echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$ISO_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
           cp "$HOME/.abuild/$ISO_KEY_NAME.pub" "/etc/apk/keys/"
-          ls "$HOME/.abuild/"
-          make
-      - name: archive
+      - name: "run build"
+        run: make
+      - name: "archive outputs"
         uses: actions/upload-artifact@v4
         with:
           name: alpine-iso
