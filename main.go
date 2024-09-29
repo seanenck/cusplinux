@@ -31,7 +31,11 @@ type (
 			Directory string `yaml:"directory"`
 			Template  string `yaml:"template"`
 		} `yaml:"source"`
-		Commands map[string][]string `yaml:"commands"`
+		Commands   map[string][]string `yaml:"commands"`
+		PreProcess []struct {
+			Command string
+			Args    []string
+		} `yaml:"preprocess"`
 	}
 )
 
@@ -162,6 +166,16 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 	profile := filepath.Join(root, fmt.Sprintf("mkimg.%s.sh", cfg.Name))
 	if err := os.WriteFile(profile, buf.Bytes(), 0o755); err != nil {
 		return err
+	}
+	for _, c := range cfg.PreProcess {
+		args := c.Args
+		args = append(args, clone)
+		cmd := exec.Command(c.Command, args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
 	}
 
 	args := []string{
