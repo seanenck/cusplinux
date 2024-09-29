@@ -1,3 +1,5 @@
+OUTPUT := build/
+
 all:
-	mkdir -p $(HOME)/build/
-	go run main.go --config config.yaml
+	mkdir -p $(OUTPUT)
+	go run main.go --config config.yaml --output $(OUTPUT)

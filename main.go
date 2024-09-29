@@ -32,7 +32,6 @@ type (
 			Directory string `yaml:"directory"`
 			Template  string `yaml:"template"`
 		} `yaml:"source"`
-		Output    string              `yaml:"output"`
 		Commands  map[string][]string `yaml:"commands"`
 		Timestamp string              `yaml:"timestamp"`
 	}
@@ -48,6 +47,7 @@ func main() {
 func run() error {
 	inConfig := flag.String("config", "", "configuration file")
 	debug := flag.Bool("debug", false, "enable debugging")
+	output := flag.String("output", "", "output directory for ISO artifacts")
 	flag.Parse()
 	b, err := os.ReadFile(*inConfig)
 	if err != nil {
@@ -59,9 +59,10 @@ func run() error {
 	}
 	did := false
 	isDebug := *debug
+	to := *output
 	for idx := range cfg.Tags {
 		did = true
-		if err := cfg.run(idx, isDebug); err != nil {
+		if err := cfg.run(idx, isDebug, to); err != nil {
 			return err
 		}
 	}
@@ -71,7 +72,7 @@ func run() error {
 	return nil
 }
 
-func (cfg Config) run(idx int, debug bool) error {
+func (cfg Config) run(idx int, debug bool, to string) error {
 	dir, err := os.MkdirTemp("", "alpine-iso.")
 	if err != nil {
 		return err
@@ -189,8 +190,6 @@ func (cfg Config) run(idx int, debug bool) error {
 		return nil
 	}
 	found := false
-	home := os.Getenv("HOME")
-	to := filepath.Join(home, cfg.Output)
 	now := time.Now().Format(cfg.Timestamp)
 	for _, f := range files {
 		name := f.Name()
