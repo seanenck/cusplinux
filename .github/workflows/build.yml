@@ -28,7 +28,7 @@ jobs:
         env:
           ISO_PRIVKEY: ${{secrets.ALPINE_ISO_RSA_KEY}}
           ISO_PUBKEY: ${{secrets.ALPINE_ISO_RSA_KEY_PUBLIC}}
-          ISO_KEY_NAME: ${{secrets.ALPINE_ISO_KEY_NAME}}
+          ISO_KEY_NAME: ${{vars.ALPINE_ISO_KEY_NAME}}
         run: |
           mkdir -p "$HOME/.abuild"
           echo "$ISO_PRIVKEY" > "$HOME/.abuild/$ISO_KEY_NAME"
