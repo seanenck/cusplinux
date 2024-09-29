@@ -1,3 +1,4 @@
+// Package main is the ISO generator wrapper
 package main
 
 import (
@@ -17,6 +18,7 @@ import (
 )
 
 type (
+	// Config handles input ISO build configurations
 	Config struct {
 		Tags       []string `yaml:"tag"`
 		Repository struct {
