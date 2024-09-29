@@ -47,6 +47,7 @@ func main() {
 
 func run() error {
 	inConfig := flag.String("config", "", "configuration file")
+	debug := flag.Bool("debug", false, "enable debugging")
 	flag.Parse()
 	b, err := os.ReadFile(*inConfig)
 	if err != nil {
@@ -57,9 +58,10 @@ func run() error {
 		return err
 	}
 	did := false
+	isDebug := *debug
 	for idx := range cfg.Tags {
 		did = true
-		if err := cfg.run(idx); err != nil {
+		if err := cfg.run(idx, isDebug); err != nil {
 			return err
 		}
 	}
@@ -69,7 +71,7 @@ func run() error {
 	return nil
 }
 
-func (cfg Config) run(idx int) error {
+func (cfg Config) run(idx int, debug bool) error {
 	dir, err := os.MkdirTemp("", "alpine-iso.")
 	if err != nil {
 		return err
@@ -128,6 +130,9 @@ func (cfg Config) run(idx int) error {
 	if err := t.Execute(&buf, obj); err != nil {
 		return err
 	}
+	if debug {
+		fmt.Printf("profile: %s", buf.String())
+	}
 	var repositories []string
 	url := cfg.Repository.URL
 	for _, repo := range cfg.Repository.Repositories {
@@ -169,7 +174,9 @@ func (cfg Config) run(idx int) error {
 		"--tag", rawTag,
 	}
 	args = append(args, repositories...)
-	fmt.Println(args)
+	if debug {
+		fmt.Printf("mkimage arguments: %v\n", args)
+	}
 	cmd = exec.Command("sh", args...)
 	cmd.Dir = dir
 	cmd.Stdout = os.Stdout
@@ -188,9 +195,9 @@ func (cfg Config) run(idx int) error {
 	for _, f := range files {
 		name := f.Name()
 		if strings.HasSuffix(name, ".iso") {
-			fmt.Printf("artifact: %s\n", name)
 			found = true
 			dest := filepath.Join(to, fmt.Sprintf("%s.%s", now, name))
+			fmt.Printf("artifact: %s (-> %s)\n", name, dest)
 			if err := exec.Command("mv", filepath.Join(out, name), dest).Run(); err != nil {
 				return err
 			}
