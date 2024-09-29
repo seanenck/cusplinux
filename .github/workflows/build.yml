@@ -32,6 +32,6 @@ jobs:
           echo "$ISO_PRIVKEY" > "$HOME/.abuild/$ISO_KEY_NAME"
           echo "$ISO_PUBKEY" > "$HOME/.abuild/$ISO_KEY_NAME.pub"
           echo "PACKAGER_PRIVKEY=\"$HOME/$ISO_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
-          sudo cp "$HOME/.abuild/$ISO_KEY_NAME.pub" "/etc/apk/keys/"
+          doas cp "$HOME/.abuild/$ISO_KEY_NAME.pub" "/etc/apk/keys/"
       - name: "run"
         run: go run main.go --config config.yaml
