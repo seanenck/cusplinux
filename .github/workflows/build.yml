@@ -33,5 +33,6 @@ jobs:
           mkdir -p "$HOME/.abuild"
           echo "$ISO_PRIVKEY" > "$HOME/.abuild/$ISO_KEY_NAME"
           echo "$ISO_PUBKEY" > "$HOME/.abuild/$ISO_KEY_NAME.pub"
-          echo "PACKAGER_PRIVKEY=\"$HOME/$ISO_KEY_NAME\"" > "~/.abuild/abuild.conf"
+          echo "PACKAGER_PRIVKEY=\"$HOME/$ISO_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
           ls "$HOME/.abuild"
+          cat "$HOME/.abuild/abuild.conf"
