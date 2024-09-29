@@ -17,6 +17,11 @@ import (
 )
 
 type (
+	// Command are config commands that require a call and arguments
+	Command struct {
+		Call      string   `yaml:"call"`
+		Arguments []string `yaml:"arguments"`
+	}
 	// Config handles input ISO build configurations
 	Config struct {
 		Tags       []string `yaml:"tags"`
@@ -32,11 +37,8 @@ type (
 			Template  string   `yaml:"template"`
 			Arguments []string `yaml:"arguments"`
 		} `yaml:"source"`
-		Commands   map[string][]string `yaml:"commands"`
-		PreProcess []struct {
-			Command string   `yaml:"command"`
-			Args    []string `yaml:"arguments"`
-		} `yaml:"preprocess"`
+		Variables  map[string]Command `yaml:"variables"`
+		PreProcess []Command          `yaml:"preprocess"`
 	}
 )
 
@@ -102,19 +104,9 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 		}
 	}
 	cmds := make(map[string][]string)
-	if cfg.Commands != nil {
-		for n, c := range cfg.Commands {
-			var exe string
-			var args []string
-			switch len(c) {
-			case 0:
-				return fmt.Errorf("command has not executable settings")
-			case 1:
-			default:
-				args = c[1:]
-			}
-			exe = c[0]
-			t, err := exec.Command(exe, args...).Output()
+	if cfg.Variables != nil {
+		for n, c := range cfg.Variables {
+			t, err := exec.Command(c.Call, c.Arguments...).Output()
 			if err != nil {
 				return err
 			}
@@ -169,9 +161,9 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 		return err
 	}
 	for _, c := range cfg.PreProcess {
-		args := c.Args
+		args := c.Arguments
 		args = append(args, clone)
-		cmd := exec.Command(c.Command, args...)
+		cmd := exec.Command(c.Call, args...)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		if err := cmd.Run(); err != nil {

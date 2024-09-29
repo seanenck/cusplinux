@@ -1,7 +1,9 @@
 name: ttypty
 architecture: "aarch64"
-commands:
-  world: ["cat", "world"]
+variables:
+  world:
+    call: "cat"
+    arguments: ["world"]
 tags:
   - 3.20.3
 repository:
