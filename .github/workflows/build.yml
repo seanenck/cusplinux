@@ -36,8 +36,7 @@ jobs:
           echo "PACKAGER_PRIVKEY=\"$HOME/$ISO_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
           cp "$HOME/.abuild/$ISO_KEY_NAME.pub" "/etc/apk/keys/"
           ls "$HOME/.abuild/"
-      - name: "run"
-        run: make
+          make
       - name: archive
         uses: actions/upload-artifact@v4
         with:
