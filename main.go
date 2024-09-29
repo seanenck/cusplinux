@@ -27,14 +27,15 @@ type (
 		Architecture string `yaml:"architecture"`
 		Name         string `yaml:"name"`
 		Source       struct {
-			Remote    string `yaml:"remote"`
-			Directory string `yaml:"directory"`
-			Template  string `yaml:"template"`
+			Remote    string   `yaml:"remote"`
+			Directory string   `yaml:"directory"`
+			Template  string   `yaml:"template"`
+			Arguments []string `yaml:"arguments"`
 		} `yaml:"source"`
 		Commands   map[string][]string `yaml:"commands"`
 		PreProcess []struct {
-			Command string
-			Args    []string
+			Command string   `yaml:"command"`
+			Args    []string `yaml:"arguments"`
 		} `yaml:"preprocess"`
 	}
 )
@@ -186,6 +187,7 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 		"--tag", rawTag,
 	}
 	args = append(args, repositories...)
+	args = append(args, cfg.Source.Arguments...)
 	if debug {
 		fmt.Printf("mkimage arguments: %v\n", args)
 	}
