@@ -14,6 +14,7 @@ doas
 docs
 dosfstools
 e2fsprogs
+efm-langserver
 file
 git
 grub-efi
@@ -27,4 +28,5 @@ ripgrep
 rsync
 shellcheck
 squashfs-tools
+unzip
 xorriso

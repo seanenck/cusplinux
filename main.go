@@ -13,7 +13,7 @@ import (
 	"strings"
 	"text/template"
 
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 type (
@@ -59,7 +59,7 @@ func run() error {
 		return err
 	}
 	cfg := Config{}
-	if err := yaml.Unmarshal(b, &cfg); err != nil {
+	if err := yaml.UnmarshalWithOptions(b, &cfg, yaml.DisallowUnknownField()); err != nil {
 		return err
 	}
 	did := false
