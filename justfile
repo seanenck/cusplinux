@@ -1,4 +1,4 @@
-target := source_dir() / "build/"
+target := `pwd` / "build/"
 
 default: build
 
@@ -7,7 +7,7 @@ build:
     mkdir -p "{{target}}"
     for f in `ls *.yaml`; do \
         echo "building $f"; \
-        echo @go run main.go --config $f --output {{target}}; \
+        go run main.go --config $f --output {{target}}; \
     done
 
 clean:
