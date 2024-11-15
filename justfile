@@ -5,7 +5,7 @@ default: build
 [no-cd]
 build:
     mkdir -p "{{target}}"
-    for f in `ls *.yaml`; do \
+    for f in `ls *.toml`; do \
         echo "building $f"; \
         go run main.go --config $f --output {{target}}; \
     done

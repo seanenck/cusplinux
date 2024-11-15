@@ -14,7 +14,7 @@ To use
 2. Set GitHub secrets: `ALPINE_ISO_RSA_KEY` and `ALPINE_ISO_RSA_KEY_PUBLIC` (from `abuild-keygen`)
 3. Set GitHub variable: `ALPINE_ISO_KEY_NAME` to the name of the RSA key (from
    abuild configuration, this should mirror a local system for debugging)
-4. Update `builder.yaml` (specify additional `commands` to inject additional
+4. Update `builder.toml` (specify additional `commands` to inject additional
    key/value pairs into the template)
 5. Run a build
 6. ISO files are archived at the end of the action

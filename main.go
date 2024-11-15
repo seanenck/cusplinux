@@ -13,32 +13,32 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/goccy/go-yaml"
+	"github.com/BurntSushi/toml"
 )
 
 type (
 	// Command are config commands that require a call and arguments
 	Command struct {
-		Call      string   `yaml:"call"`
-		Arguments []string `yaml:"arguments"`
+		Call      string
+		Arguments []string
 	}
 	// Config handles input ISO build configurations
 	Config struct {
-		Tags       []string `yaml:"tags"`
+		Tags       []string
 		Repository struct {
-			URL          string   `yaml:"url"`
-			Repositories []string `yaml:"repositories"`
-		} `yaml:"repository"`
-		Architecture string `yaml:"architecture"`
-		Name         string `yaml:"name"`
+			URL          string
+			Repositories []string
+		}
+		Architecture string
+		Name         string
 		Source       struct {
-			Remote    string   `yaml:"remote"`
-			Directory string   `yaml:"directory"`
-			Template  string   `yaml:"template"`
-			Arguments []string `yaml:"arguments"`
-		} `yaml:"source"`
-		Variables  map[string]Command `yaml:"variables"`
-		PreProcess []Command          `yaml:"preprocess"`
+			Remote    string
+			Directory string
+			Template  string
+			Arguments []string
+		}
+		Variables  map[string]Command
+		PreProcess []Command
 	}
 )
 
@@ -59,8 +59,14 @@ func run() error {
 		return err
 	}
 	cfg := Config{}
-	if err := yaml.UnmarshalWithOptions(b, &cfg, yaml.DisallowUnknownField()); err != nil {
+	decoder := toml.NewDecoder(bytes.NewReader(b))
+	md, err := decoder.Decode(&cfg)
+	if err != nil {
 		return err
+	}
+	undecoded := md.Undecoded()
+	if len(undecoded) > 0 {
+		return fmt.Errorf("undecoded fields: %v", undecoded)
 	}
 	did := false
 	isDebug := *debug
