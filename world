@@ -1,7 +1,6 @@
 age
 alpine-base
 alpine-conf
-alpine-sdk
 bash
 bash-completion
 bat
@@ -18,15 +17,10 @@ efm-langserver
 file
 git
 grub-efi
-kitty-terminfo
 make
-mtools
 neovim
 openssh
 openssl
 ripgrep
 rsync
 shellcheck
-squashfs-tools
-unzip
-xorriso
