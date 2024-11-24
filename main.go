@@ -119,12 +119,16 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 			cmds[n] = strings.Split(string(t), "\n")
 		}
 	}
+	type Definition struct {
+		Name string
+		Arch string
+		Tag  string
+	}
+	base := Definition{cfg.Name, cfg.Architecture, tag}
 	obj := struct {
-		Name     string
-		Arch     string
-		Tag      string
+		Definition
 		Commands map[string][]string
-	}{cfg.Name, cfg.Architecture, tag, cmds}
+	}{base, cmds}
 	t, err := template.New("t").Parse(cfg.Source.Template)
 	if err != nil {
 		return err
@@ -166,9 +170,31 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 	if err := os.WriteFile(profile, buf.Bytes(), 0o755); err != nil {
 		return err
 	}
+	templating := struct {
+		Definition
+		Directories struct {
+			Clone       string
+			Source      string
+			CloneSource string
+		}
+	}{}
+	templating.Definition = base
+	templating.Directories.Clone = clone
+	templating.Directories.Source = cfg.Source.Directory
+	templating.Directories.CloneSource = root
 	for _, c := range cfg.PreProcess {
-		args := c.Arguments
-		args = append(args, clone)
+		var args []string
+		for _, a := range c.Arguments {
+			t, err := template.New("t").Parse(a)
+			if err != nil {
+				return err
+			}
+			var buf bytes.Buffer
+			if err := t.Execute(&buf, templating); err != nil {
+				return err
+			}
+			args = append(args, buf.String())
+		}
 		cmd := exec.Command(c.Call, args...)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
