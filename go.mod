@@ -1,4 +1,4 @@
-module github.com/seanenck/alpine-iso-builder
+module github.com/seanenck/alpine-image-builder
 
 go 1.23.1
 

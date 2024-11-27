@@ -14,7 +14,7 @@ on:
 jobs:
   builds:
     runs-on: ubuntu-latest
-    name: iso
+    name: build
     container:
       image: alpine:latest
     steps:
@@ -27,19 +27,19 @@ jobs:
         run: apk add git just alpine-sdk mtools dosfstools alpine-conf syslinux xorriso squashfs-tools grub grub-efi doas
       - name: "setup keys"
         env:
-          ISO_PRIVKEY: ${{secrets.ALPINE_ISO_RSA_KEY}}
-          ISO_PUBKEY: ${{secrets.ALPINE_ISO_RSA_KEY_PUBLIC}}
-          ISO_KEY_NAME: ${{vars.ALPINE_ISO_KEY_NAME}}
+          IMAGE_PRIVKEY: ${{secrets.ALPINE_IMAGE_RSA_KEY}}
+          IMAGE_PUBKEY: ${{secrets.ALPINE_IMAGE_RSA_KEY_PUBLIC}}
+          IMAGE_KEY_NAME: ${{vars.ALPINE_IMAGE_KEY_NAME}}
         run: |
           mkdir -p "$HOME/.abuild"
-          echo "$ISO_PRIVKEY" > "$HOME/.abuild/$ISO_KEY_NAME"
-          echo "$ISO_PUBKEY" > "$HOME/.abuild/$ISO_KEY_NAME.pub"
-          echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$ISO_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
-          cp "$HOME/.abuild/$ISO_KEY_NAME.pub" "/etc/apk/keys/"
+          echo "$IMAGE_PRIVKEY" > "$HOME/.abuild/$IMAGE_KEY_NAME"
+          echo "$IMAGE_PUBKEY" > "$HOME/.abuild/$IMAGE_KEY_NAME.pub"
+          echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$IMAGE_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
+          cp "$HOME/.abuild/$IMAGE_KEY_NAME.pub" "/etc/apk/keys/"
       - name: "run build"
         run: just
       - name: "archive outputs"
         uses: actions/upload-artifact@v4
         with:
-          name: alpine-iso
+          name: alpine-image
           path: 'build/'

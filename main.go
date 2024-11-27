@@ -1,4 +1,4 @@
-// Package main is the ISO generator wrapper
+// Package main is the generator wrapper
 package main
 
 import (
@@ -22,7 +22,7 @@ type (
 		Call      string
 		Arguments []string
 	}
-	// Config handles input ISO build configurations
+	// Config handles input build configurations
 	Config struct {
 		Tags       []string
 		Repository struct {
@@ -52,7 +52,7 @@ func main() {
 func run() error {
 	inConfig := flag.String("config", "", "configuration file")
 	debug := flag.Bool("debug", false, "enable debugging")
-	output := flag.String("output", "", "output directory for ISO artifacts")
+	output := flag.String("output", "", "output directory for artifacts")
 	flag.Parse()
 	b, err := os.ReadFile(*inConfig)
 	if err != nil {
@@ -71,7 +71,7 @@ func run() error {
 	did := false
 	isDebug := *debug
 	to := *output
-	tmp, err := os.MkdirTemp("", "alpine-iso.")
+	tmp, err := os.MkdirTemp("", "alpine-image.")
 	if err != nil {
 		return err
 	}
