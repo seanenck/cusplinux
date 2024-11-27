@@ -4,6 +4,11 @@ tags = [
   "3.20.3"
 ]
 
+preprocess = [
+  { call = "sed", arguments = ["-i", "s/echo \"set timeout=1\"/echo \"set timeout=0\"/g", "{{ $.Directories.CloneSource }}/mkimg.base.sh"] },
+  { call = "sed", arguments = ["-i", "s/linux-firmware wireless-regdb/linux-firmware-none/g", "{{ $.Directories.CloneSource }}/mkimg.base.sh"] },
+]
+
 [variables.world]
 call = "cat"
 arguments = ["world"]
@@ -20,13 +25,20 @@ remote = "https://gitlab.alpinelinux.org/alpine/aports"
 directory = "scripts"
 template = """
   profile_{{ $.Name }}() {
-    profile_standard
+    hostname="alpine.{{ $.Name }}"
+    modloop_sign=yes
+    initfs_cmdline="modules=loop,squashfs,sd-mod,usb-storage quiet"
+    initfs_features="ata base bootchart cdrom ext4 nvme squashfs usb virtio"
+    grub_mod="all_video disk part_gpt part_msdos linux normal configfile search search_label efi_gop fat iso9660 cat echo ls test true help gzio"
+    profile_abbrev="std"
+    image_ext="iso"
+    output_format="iso"
     title='{{ $.Name }}'
     desc='{{ $.Name }} personal spin iso'
     kernel_flavors='virt'
     profile_abbrev='{{ $.Name }}'
-    aarch='{{ $.Arch }}'
+    arch='{{ $.Arch }}'
     kernel_addons=
-    apks="$apks{{range $i, $a := index $.Commands "world" }} {{ $a }}{{end}}"
+    apks="{{range $i, $a := index $.Commands "world" }} {{ $a }}{{end}}"
   }
 """
