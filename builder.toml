@@ -24,21 +24,21 @@ repositories = [
 remote = "https://gitlab.alpinelinux.org/alpine/aports"
 directory = "scripts"
 template = """
-  profile_{{ $.Name }}() {
-    hostname="alpine.{{ $.Name }}"
-    modloop_sign=yes
-    initfs_cmdline="modules=loop,squashfs,sd-mod,usb-storage quiet"
-    initfs_features="ata base bootchart cdrom ext4 nvme squashfs usb virtio"
-    grub_mod="all_video disk part_gpt part_msdos linux normal configfile search search_label efi_gop fat iso9660 cat echo ls test true help gzio"
-    profile_abbrev="std"
-    image_ext="iso"
-    output_format="iso"
-    title='{{ $.Name }}'
-    desc='{{ $.Name }} personal spin iso'
-    kernel_flavors='virt'
-    profile_abbrev='{{ $.Name }}'
-    arch='{{ $.Arch }}'
-    kernel_addons=
-    apks="{{range $i, $a := index $.Commands "world" }} {{ $a }}{{end}}"
-  }
+profile_{{ $.Name }}() {
+  hostname="alpine.{{ $.Name }}"
+  modloop_sign=yes
+  initfs_cmdline="modules=loop,squashfs,sd-mod,usb-storage quiet"
+  initfs_features="ata base bootchart cdrom ext4 nvme squashfs usb virtio"
+  grub_mod="all_video disk part_gpt part_msdos linux normal configfile search search_label efi_gop fat iso9660 cat echo ls test true help gzio"
+  profile_abbrev="std"
+  image_ext="iso"
+  output_format="iso"
+  title='{{ $.Name }}'
+  desc='{{ $.Name }} personal spin iso'
+  kernel_flavors='virt'
+  profile_abbrev='{{ $.Name }}'
+  arch='{{ $.Arch }}'
+  kernel_addons=
+  apks="{{range $i, $a := index $.Commands "world" }} {{ $a }}{{end}}"
+}
 """

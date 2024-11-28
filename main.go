@@ -36,6 +36,7 @@ type (
 			Directory string
 			Template  string
 			Arguments []string
+			Overlay   string
 		}
 		Variables  map[string]Command
 		PreProcess []Command
@@ -88,6 +89,18 @@ func run() error {
 	return nil
 }
 
+func simpleTemplate(in string, obj interface{}) (bytes.Buffer, error) {
+	t, err := template.New("t").Parse(in)
+	if err != nil {
+		return bytes.Buffer{}, err
+	}
+	var buf bytes.Buffer
+	if err := t.Execute(&buf, obj); err != nil {
+		return bytes.Buffer{}, err
+	}
+	return buf, nil
+}
+
 func (cfg Config) run(idx int, debug bool, dir, to string) error {
 	first := idx == 0
 	var tag string
@@ -129,12 +142,8 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 		Definition
 		Commands map[string][]string
 	}{base, cmds}
-	t, err := template.New("t").Parse(cfg.Source.Template)
+	buf, err := simpleTemplate(cfg.Source.Template, obj)
 	if err != nil {
-		return err
-	}
-	var buf bytes.Buffer
-	if err := t.Execute(&buf, obj); err != nil {
 		return err
 	}
 	if debug {
@@ -170,6 +179,18 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 	if err := os.WriteFile(profile, buf.Bytes(), 0o755); err != nil {
 		return err
 	}
+	if cfg.Source.Overlay != "" {
+		ovl, err := simpleTemplate(cfg.Source.Overlay, obj)
+		if err != nil {
+			return err
+		}
+		if debug {
+			fmt.Printf("overlay: %s\n", ovl.String())
+		}
+		if err := os.WriteFile(filepath.Join(root, fmt.Sprintf("genapkovl-%s.sh", cfg.Name)), ovl.Bytes(), 0o755); err != nil {
+			return err
+		}
+	}
 	templating := struct {
 		Definition
 		Directories struct {
@@ -185,12 +206,8 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 	for _, c := range cfg.PreProcess {
 		var args []string
 		for _, a := range c.Arguments {
-			t, err := template.New("t").Parse(a)
+			buf, err := simpleTemplate(a, templating)
 			if err != nil {
-				return err
-			}
-			var buf bytes.Buffer
-			if err := t.Execute(&buf, templating); err != nil {
 				return err
 			}
 			args = append(args, buf.String())
