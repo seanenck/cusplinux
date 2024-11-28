@@ -1,0 +1,15 @@
+target := `pwd` / "build/"
+binary := `pwd` / ".." / "target" / "alpine-image-builder"
+
+default: build
+
+[no-cd]
+build:
+    mkdir -p "{{target}}"
+    for f in `ls *.toml`; do \
+        echo "building $f"; \
+        {{binary}} --config $f --output {{target}}; \
+    done
+
+clean:
+    rm -rf "{{target}}"

@@ -1,14 +1,12 @@
-target := `pwd` / "build/"
+goflags := "-trimpath -buildmode=pie -mod=readonly -modcacherw -buildvcs=false"
+objects := "target"
 
-default: build
+default: (build "obu") (build "alpine-image-builder")
 
-[no-cd]
-build:
-    mkdir -p "{{target}}"
-    for f in `ls *.toml`; do \
-        echo "building $f"; \
-        go run main.go --config $f --output {{target}}; \
-    done
+build target:
+  @echo 'Building {{target}}...'
+  mkdir -p {{objects}}
+  go build {{goflags}} -o "{{objects}}/{{target}}" "cmd/{{target}}/"*.go
 
 clean:
-    rm -rf "{{target}}"
+  rm -f "{{objects}}/"*
