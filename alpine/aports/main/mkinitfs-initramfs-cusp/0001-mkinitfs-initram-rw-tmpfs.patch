@@ -1,0 +1,28 @@
+diff --git a/initramfs-init.in b/initramfs-init.in
+index 3018f27..dddb91b 100755
+--- a/initramfs-init.in
++++ b/initramfs-init.in
+@@ -671,19 +671,19 @@ if [ -n "$KOPT_root" ]; then
+ 
+ 	if [ "$KOPT_overlaytmpfs" = "yes" ]; then
+ 		# Create mountpoints
+-		mkdir -p /media/root-ro /media/root-rw $sysroot/media/root-ro \
++		mkdir -p /media/root-sysroot /media/root-rw $sysroot/media/root-sysroot \
+ 			$sysroot/media/root-rw
+ 		# Mount read-only underlying rootfs
+-		rootflags="${KOPT_rootflags:+$KOPT_rootflags,}ro"
++		rootflags="${KOPT_rootflags:+$KOPT_rootflags,}rw"
+ 		$MOCK mount ${KOPT_rootfstype:+-t $KOPT_rootfstype} -o $rootflags \
+-			$KOPT_root /media/root-ro
++			$KOPT_root /media/root-sysroot
+ 		# Mount writable overlay tmpfs
+ 		overlaytmpfsflags="mode=0755,${KOPT_overlaytmpfsflags:+$KOPT_overlaytmpfsflags,}rw"
+ 		$MOCK mount -t tmpfs -o $overlaytmpfsflags root-tmpfs /media/root-rw
+ 		# Create additional mountpoints and do the overlay mount
+ 		mkdir -p /media/root-rw/work /media/root-rw/root
+ 		$MOCK mount -t overlay -o \
+-			lowerdir=/media/root-ro,upperdir=/media/root-rw/root,workdir=/media/root-rw/work \
++			lowerdir=/media/root-sysroot,upperdir=/media/root-rw/root,workdir=/media/root-rw/work \
+ 			overlayfs $sysroot
+ 	else
+ 		if [ "$rootfstype" = "zfs" ]; then

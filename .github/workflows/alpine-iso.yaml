@@ -1,4 +1,4 @@
-name: "build"
+name: "alpine-iso"
 
 on:
   workflow_dispatch:
@@ -23,10 +23,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.23
-      - name: "update"
-        run: apk update && apk upgrade
       - name: "install deps"
-        run: apk add git just alpine-sdk mtools dosfstools alpine-conf syslinux xorriso squashfs-tools grub grub-efi doas
+        run: apk add git just doas
       - name: "build tools"
         run: just
       - name: "setup keys"

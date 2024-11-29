@@ -6,7 +6,11 @@ default: build
 
 [no-cd]
 build:
+    cd ../ && just
     {{binary}} --config builder.toml --workdir "{{pwd}}" --output "{{target}}"
+    
+deps:
+    doas apk add alpine-sdk mtools dosfstools alpine-conf syslinux xorriso squashfs-tools grub grub-efi abuild abuild-rootbld mkinitfs-initramfs-cusp
 
 clean:
     rm -rf "{{target}}"

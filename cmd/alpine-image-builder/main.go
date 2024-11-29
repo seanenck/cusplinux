@@ -6,8 +6,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,8 +35,6 @@ type (
 			Repositories []string
 		}
 		Source struct {
-			Scripts   string
-			Patches   []string
 			Template  string
 			Arguments []string
 			Overlay   string
@@ -169,58 +165,10 @@ func (cfg Config) run(debug bool, dir, to, workdir string) error {
 
 		repositories = append(repositories, "--repository", text.String())
 	}
-	scriptFiles := filepath.Join(to, fmt.Sprintf("%s.scripts.tar.gz", cfg.Definition.Tag))
-	if !pathExists(scriptFiles) {
-		url, err := simpleTemplate(cfg.Source.Scripts, obj)
-		if err != nil {
-			return err
-		}
-		urlText := url.String()
-		fmt.Printf("scripts downloading: %s\n", urlText)
-		resp, err := http.Get(urlText)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		files, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-		if err := os.WriteFile(scriptFiles, files, 0o644); err != nil {
-			return err
-		}
-	}
-
-	if err := exec.Command("tar", "xf", scriptFiles, "--strip-components", "1", "-C", dir).Run(); err != nil {
+	if err := exec.Command("cp", "-r", filepath.Join(workdir, "aports"), dir).Run(); err != nil {
 		return err
 	}
-	copied := filepath.Join(dir, "scripts")
-	var patches []string
-	for _, p := range cfg.Source.Patches {
-		full := filepath.Join(workdir, p)
-		adding := []string{full}
-		if strings.Contains(p, "*") {
-			globbed, err := filepath.Glob(full)
-			if err != nil {
-				return err
-			}
-			if len(globbed) == 0 {
-				return fmt.Errorf("no files matched for patches: %s", p)
-			}
-			adding = globbed
-		}
-		patches = append(patches, adding...)
-	}
-	for _, p := range patches {
-		fmt.Printf("applying patch: %s\n", p)
-		cmd := exec.Command("patch", "-p1", "-i", p)
-		cmd.Dir = dir
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		if err := cmd.Run(); err != nil {
-			return err
-		}
-	}
+	copied := filepath.Join(dir, "aports", "scripts")
 	profile := filepath.Join(copied, fmt.Sprintf("mkimg.%s.sh", cfg.Definition.Name))
 	if err := os.WriteFile(profile, buf.Bytes(), 0o755); err != nil {
 		return err

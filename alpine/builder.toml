@@ -15,12 +15,6 @@ repositories = [
 ] 
 
 [source]
-# TODO: cross building doesn't work in 3.20.* series at this time
-scripts = "https://gitlab.alpinelinux.org/alpine/aports/-/archive/master/aports-master.tar.gz?path=scripts"
-#scripts = "https://gitlab.alpinelinux.org/alpine/aports/-/archive/{{ $.Branch }}-stable/aports-{{ $.Branch }}-stable.tar.gz?path=scripts"
-patches = [
-  "patches/*"
-]
 template = """
 profile_{{ $.Name }}() {
   hostname="alpine.{{ $.Name }}"
