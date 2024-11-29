@@ -23,10 +23,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.23
-      - name: "install deps"
+      - name: "install base deps"
         run: apk add git just doas syslinux
-      - name: "build tools"
-        run: just
       - name: "setup keys"
         env:
           IMAGE_PRIVKEY: ${{secrets.ALPINE_IMAGE_RSA_KEY}}
