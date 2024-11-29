@@ -26,10 +26,7 @@ jobs:
       - name: "unpack repository"
         run: |
           tar xf repository.tar.gz
-          echo "${GITHUB_WORKSPACE}" >> /etc/apk/repositories
-          echo "$PWD"
-          ls -alh
-          apk update
+          apk add --allow-untrusted *.apk
       - name: "setup go"
         uses: actions/setup-go@v5
         with:
