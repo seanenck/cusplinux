@@ -26,7 +26,7 @@ jobs:
       - name: "unpack repository"
         run: |
           tar xf repository.tar.gz
-          echo "$PWD" >> /etc/apk/repositories
+          echo "${GITHUB_WORKSPACE}" >> /etc/apk/repositories
       - name: "setup go"
         uses: actions/setup-go@v5
         with:
