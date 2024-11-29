@@ -176,9 +176,7 @@ func (cfg Config) run(debug bool, dir, to, workdir string) error {
 			return err
 		}
 		urlText := url.String()
-		if debug {
-			fmt.Printf("scripts downloading: %s\n", urlText)
-		}
+		fmt.Printf("scripts downloading: %s\n", urlText)
 		resp, err := http.Get(urlText)
 		if err != nil {
 			return err
@@ -214,6 +212,7 @@ func (cfg Config) run(debug bool, dir, to, workdir string) error {
 		patches = append(patches, adding...)
 	}
 	for _, p := range patches {
+		fmt.Printf("applying patch: %s\n", p)
 		cmd := exec.Command("patch", "-p1", "-i", p)
 		cmd.Dir = dir
 		cmd.Stdout = os.Stdout
