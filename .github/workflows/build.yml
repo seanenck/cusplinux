@@ -24,7 +24,7 @@ jobs:
         with:
           go-version: 1.23
       - name: "install deps"
-        run: apk add git just alpine-sdk mtools dosfstools alpine-conf syslinux xorriso squashfs-tools grub grub-efi doas alpine-keys
+        run: apk add git just alpine-sdk mtools dosfstools alpine-conf syslinux xorriso squashfs-tools grub grub-efi doas
       - name: "build tools"
         run: just
       - name: "setup keys"
