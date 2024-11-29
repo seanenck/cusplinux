@@ -208,6 +208,7 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 		"--arch", settings.arch,
 		"--profile", cfg.Name,
 		"--tag", rawTag,
+		"--hostkeys",
 	}
 	args = append(args, repositories...)
 	args = append(args, cfg.Source.Arguments...)
