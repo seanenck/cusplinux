@@ -1,4 +1,7 @@
+[definition]
 name = "ttypty"
+tag = "3.20.3"
+arch = "aarch64"
 
 preprocess = [
   { call = "sed", arguments = ["-i", "s/echo \"set timeout=1\"/echo \"set timeout=0\"/g", "{{ $.Scripts }}/mkimg.base.sh"] },
@@ -17,6 +20,12 @@ repositories = [
 ] 
 
 [source]
+# TODO: cross building doesn't work in 3.20.* series at this time
+scripts = "https://gitlab.alpinelinux.org/alpine/aports/-/archive/master/aports-master.tar.gz?path=scripts"
+#scripts = "https://gitlab.alpinelinux.org/alpine/aports/-/archive/{{ $.Branch }}-stable/aports-{{ $.Branch }}-stable.tar.gz?path=scripts"
+patches = [
+  "patches/*"
+]
 template = """
 profile_{{ $.Name }}() {
   hostname="alpine.{{ $.Name }}"

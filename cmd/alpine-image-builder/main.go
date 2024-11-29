@@ -3,8 +3,11 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,23 +26,24 @@ type (
 	}
 	// Config handles input build configurations
 	Config struct {
+		Definition struct {
+			Name       string
+			PreProcess []Command
+			Arch       string
+			Tag        string
+		}
 		Repository struct {
 			URL          string
 			Repositories []string
 		}
-		Name   string
 		Source struct {
+			Scripts   string
+			Patches   []string
 			Template  string
 			Arguments []string
 			Overlay   string
 		}
-		Variables  map[string]Command
-		PreProcess []Command
-	}
-	settings struct {
-		version string
-		arch    string
-		scripts string
+		Variables map[string]Command
 	}
 )
 
@@ -54,9 +58,7 @@ func run() error {
 	inConfig := flag.String("config", "", "configuration file")
 	debug := flag.Bool("debug", false, "enable debugging")
 	output := flag.String("output", "", "output directory for artifacts")
-	scripts := flag.String("scripts", "", "path to generation scripts")
-	version := flag.String("version", "", "alpine version to build for")
-	arch := flag.String("arch", "", "architecture to build for")
+	workdir := flag.String("workdir", "", "working directory")
 	flag.Parse()
 	b, err := os.ReadFile(*inConfig)
 	if err != nil {
@@ -73,14 +75,19 @@ func run() error {
 		return fmt.Errorf("undecoded fields: %v", undecoded)
 	}
 	isDebug := *debug
-	to := *output
+	work := *workdir
+	to := filepath.Join(work, *output)
+	if !pathExists(to) {
+		if err := os.MkdirAll(to, 0o755); err != nil {
+			return err
+		}
+	}
 	tmp, err := os.MkdirTemp("", "alpine-image.")
 	if err != nil {
 		return err
 	}
-	settings := settings{*version, *arch, *scripts}
 	defer os.RemoveAll(tmp)
-	if err := cfg.run(isDebug, settings, tmp, to); err != nil {
+	if err := cfg.run(isDebug, tmp, to, work); err != nil {
 		return err
 	}
 	return nil
@@ -98,9 +105,10 @@ func simpleTemplate(in string, obj interface{}) (bytes.Buffer, error) {
 	return buf, nil
 }
 
-func (cfg Config) run(debug bool, settings settings, dir, to string) error {
-	tag := settings.version
+func (cfg Config) run(debug bool, dir, to, workdir string) error {
+	tag := cfg.Definition.Tag
 	rawTag := tag
+	var branch string
 	if strings.Contains(rawTag, ".") {
 		parts := strings.Split(tag, ".")
 		if len(parts) != 3 {
@@ -111,11 +119,13 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 				return fmt.Errorf("invalid version, non-numeric? %v (%w)", parts, err)
 			}
 		}
-		tag = fmt.Sprintf("v%s", strings.Join(parts[0:2], "."))
+		branch = strings.Join(parts[0:2], ".")
+		tag = fmt.Sprintf("v%s", branch)
 	} else {
 		if rawTag != "edge" {
 			return fmt.Errorf("unknown version/not edge: %s", rawTag)
 		}
+		branch = "master"
 	}
 	cmds := make(map[string][]string)
 	if cfg.Variables != nil {
@@ -128,11 +138,12 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 		}
 	}
 	type Definition struct {
-		Name string
-		Arch string
-		Tag  string
+		Name   string
+		Arch   string
+		Tag    string
+		Branch string
 	}
-	base := Definition{cfg.Name, settings.arch, tag}
+	base := Definition{cfg.Definition.Name, cfg.Definition.Arch, tag, branch}
 	obj := struct {
 		Definition
 		Commands map[string][]string
@@ -158,12 +169,60 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 
 		repositories = append(repositories, "--repository", text.String())
 	}
+	scriptFiles := filepath.Join(to, fmt.Sprintf("%s.scripts.tar.gz", cfg.Definition.Tag))
+	if !pathExists(scriptFiles) {
+		url, err := simpleTemplate(cfg.Source.Scripts, obj)
+		if err != nil {
+			return err
+		}
+		urlText := url.String()
+		if debug {
+			fmt.Printf("scripts downloading: %s\n", urlText)
+		}
+		resp, err := http.Get(urlText)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		files, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(scriptFiles, files, 0o644); err != nil {
+			return err
+		}
+	}
 
-	copied := filepath.Join(dir, "scripts")
-	if err := exec.Command("cp", "-r", settings.scripts, copied).Run(); err != nil {
+	if err := exec.Command("tar", "xf", scriptFiles, "--strip-components", "1", "-C", dir).Run(); err != nil {
 		return err
 	}
-	profile := filepath.Join(copied, fmt.Sprintf("mkimg.%s.sh", cfg.Name))
+	copied := filepath.Join(dir, "scripts")
+	var patches []string
+	for _, p := range cfg.Source.Patches {
+		full := filepath.Join(workdir, p)
+		adding := []string{full}
+		if strings.Contains(p, "*") {
+			globbed, err := filepath.Glob(full)
+			if err != nil {
+				return err
+			}
+			if len(globbed) == 0 {
+				return fmt.Errorf("no files matched for patches: %s", p)
+			}
+			adding = globbed
+		}
+		patches = append(patches, adding...)
+	}
+	for _, p := range patches {
+		cmd := exec.Command("patch", "-p1", "-i", p)
+		cmd.Dir = dir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
+	profile := filepath.Join(copied, fmt.Sprintf("mkimg.%s.sh", cfg.Definition.Name))
 	if err := os.WriteFile(profile, buf.Bytes(), 0o755); err != nil {
 		return err
 	}
@@ -175,7 +234,7 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 		if debug {
 			fmt.Printf("overlay: %s\n", ovl.String())
 		}
-		if err := os.WriteFile(filepath.Join(copied, fmt.Sprintf("genapkovl-%s.sh", cfg.Name)), ovl.Bytes(), 0o755); err != nil {
+		if err := os.WriteFile(filepath.Join(copied, fmt.Sprintf("genapkovl-%s.sh", cfg.Definition.Name)), ovl.Bytes(), 0o755); err != nil {
 			return err
 		}
 	}
@@ -185,7 +244,7 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 	}{}
 	templating.Definition = base
 	templating.Scripts = copied
-	for _, c := range cfg.PreProcess {
+	for _, c := range cfg.Definition.PreProcess {
 		var args []string
 		for _, a := range c.Arguments {
 			buf, err := simpleTemplate(a, templating)
@@ -205,8 +264,8 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 	args := []string{
 		filepath.Join(copied, "mkimage.sh"),
 		"--outdir", to,
-		"--arch", settings.arch,
-		"--profile", cfg.Name,
+		"--arch", cfg.Definition.Arch,
+		"--profile", cfg.Definition.Name,
 		"--tag", rawTag,
 	}
 	args = append(args, repositories...)
@@ -222,4 +281,11 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 		return err
 	}
 	return nil
+}
+
+func pathExists(path string) bool {
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	return true
 }
