@@ -1,14 +1,19 @@
-target := `pwd` / "build/"
-binary := `pwd` / ".." / "target" / "alpine-image-builder"
+target  := `pwd` / "build/"
+binary  := `pwd` / ".." / "target" / "alpine-image-builder"
+dltargz := target / "files.tar.gz"
+scripts := target / "scripts/"
 
 default: build
 
 [no-cd]
 build:
-    mkdir -p "{{target}}"
+    rm -rf {{scripts}}
+    mkdir -p "{{scripts}}"
+    test -e "{{dltargz}}" || wget -O "{{dltargz}}" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/3.20-stable/aports-3.20-stable.tar.gz?path=scripts"
+    tar xf "{{dltargz}}" --strip-components=2 -C "{{scripts}}"
     for f in `ls *.toml`; do \
         echo "building $f"; \
-        {{binary}} --config $f --output {{target}}; \
+        {{binary}} --config $f --output {{target}} --scripts "{{scripts}}"; \
     done
 
 clean:

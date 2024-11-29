@@ -5,8 +5,8 @@ tags = [
 ]
 
 preprocess = [
-  { call = "sed", arguments = ["-i", "s/echo \"set timeout=1\"/echo \"set timeout=0\"/g", "{{ $.Directories.CloneSource }}/mkimg.base.sh"] },
-  { call = "sed", arguments = ["-i", "s/linux-firmware wireless-regdb/linux-firmware-none/g", "{{ $.Directories.CloneSource }}/mkimg.base.sh"] },
+  { call = "sed", arguments = ["-i", "s/echo \"set timeout=1\"/echo \"set timeout=0\"/g", "{{ $.Scripts }}/mkimg.base.sh"] },
+  { call = "sed", arguments = ["-i", "s/linux-firmware wireless-regdb/linux-firmware-none/g", "{{ $.Scripts }}/mkimg.base.sh"] },
 ]
 
 [variables.world]
@@ -21,8 +21,6 @@ repositories = [
 ] 
 
 [source]
-remote = "https://gitlab.alpinelinux.org/alpine/aports"
-directory = "scripts"
 template = """
 profile_{{ $.Name }}() {
   hostname="alpine.{{ $.Name }}"

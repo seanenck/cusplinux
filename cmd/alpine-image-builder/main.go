@@ -32,8 +32,6 @@ type (
 		Architecture string
 		Name         string
 		Source       struct {
-			Remote    string
-			Directory string
 			Template  string
 			Arguments []string
 			Overlay   string
@@ -54,11 +52,13 @@ func run() error {
 	inConfig := flag.String("config", "", "configuration file")
 	debug := flag.Bool("debug", false, "enable debugging")
 	output := flag.String("output", "", "output directory for artifacts")
+	scripts := flag.String("scripts", "", "path to generation scripts")
 	flag.Parse()
 	b, err := os.ReadFile(*inConfig)
 	if err != nil {
 		return err
 	}
+	scriptDir := *scripts
 	cfg := Config{}
 	decoder := toml.NewDecoder(bytes.NewReader(b))
 	md, err := decoder.Decode(&cfg)
@@ -79,7 +79,7 @@ func run() error {
 	defer os.RemoveAll(tmp)
 	for idx := range cfg.Tags {
 		did = true
-		if err := cfg.run(idx, isDebug, tmp, to); err != nil {
+		if err := cfg.run(idx, isDebug, tmp, to, scriptDir); err != nil {
 			return err
 		}
 	}
@@ -101,8 +101,7 @@ func simpleTemplate(in string, obj interface{}) (bytes.Buffer, error) {
 	return buf, nil
 }
 
-func (cfg Config) run(idx int, debug bool, dir, to string) error {
-	first := idx == 0
+func (cfg Config) run(idx int, debug bool, dir, to, scripts string) error {
 	var tag string
 	tag = cfg.Tags[idx]
 	rawTag := tag
@@ -164,18 +163,11 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 		repositories = append(repositories, "--repository", text.String())
 	}
 
-	clone := filepath.Join(dir, "aports")
-	if first {
-		cmd := exec.Command("git", "clone", "--depth=1", cfg.Source.Remote, clone)
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
-		cmd.Dir = dir
-		if err := cmd.Run(); err != nil {
-			return err
-		}
+	copied := filepath.Join(dir, "scripts")
+	if err := exec.Command("cp", "-r", scripts, copied).Run(); err != nil {
+		return err
 	}
-	root := filepath.Join(clone, cfg.Source.Directory)
-	profile := filepath.Join(root, fmt.Sprintf("mkimg.%s.sh", cfg.Name))
+	profile := filepath.Join(copied, fmt.Sprintf("mkimg.%s.sh", cfg.Name))
 	if err := os.WriteFile(profile, buf.Bytes(), 0o755); err != nil {
 		return err
 	}
@@ -187,22 +179,16 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 		if debug {
 			fmt.Printf("overlay: %s\n", ovl.String())
 		}
-		if err := os.WriteFile(filepath.Join(root, fmt.Sprintf("genapkovl-%s.sh", cfg.Name)), ovl.Bytes(), 0o755); err != nil {
+		if err := os.WriteFile(filepath.Join(copied, fmt.Sprintf("genapkovl-%s.sh", cfg.Name)), ovl.Bytes(), 0o755); err != nil {
 			return err
 		}
 	}
 	templating := struct {
 		Definition
-		Directories struct {
-			Clone       string
-			Source      string
-			CloneSource string
-		}
+		Scripts string
 	}{}
 	templating.Definition = base
-	templating.Directories.Clone = clone
-	templating.Directories.Source = cfg.Source.Directory
-	templating.Directories.CloneSource = root
+	templating.Scripts = copied
 	for _, c := range cfg.PreProcess {
 		var args []string
 		for _, a := range c.Arguments {
@@ -221,7 +207,7 @@ func (cfg Config) run(idx int, debug bool, dir, to string) error {
 	}
 
 	args := []string{
-		filepath.Join(root, "mkimage.sh"),
+		filepath.Join(copied, "mkimage.sh"),
 		"--outdir", to,
 		"--arch", cfg.Architecture,
 		"--profile", cfg.Name,
