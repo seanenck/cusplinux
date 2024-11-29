@@ -3,11 +3,6 @@ name = "ttypty"
 tag = "3.20.3"
 arch = "aarch64"
 
-preprocess = [
-  { call = "sed", arguments = ["-i", "s/echo \"set timeout=1\"/echo \"set timeout=0\"/g", "{{ $.Scripts }}/mkimg.base.sh"] },
-  { call = "sed", arguments = ["-i", "s/linux-firmware wireless-regdb/linux-firmware-none/g", "{{ $.Scripts }}/mkimg.base.sh"] },
-]
-
 [variables.world]
 call = "cat"
 arguments = ["world"]

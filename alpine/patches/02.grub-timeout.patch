@@ -1,0 +1,11 @@
+--- a/scripts/mkimg.base.sh	2024-11-29 12:00:17.108939268 -0500
++++ b/scripts/mkimg.base.sh	2024-11-29 10:33:02.000000000 -0500
+@@ -132,7 +132,7 @@
+ 
+ grub_gen_config() {
+ 	local _f _p _initrd
+-	echo "set timeout=1"
++	echo "set timeout=0"
+ 	for _f in $kernel_flavors; do
+ 		if [ -z "${xen_params+set}" ]; then
+ 			_initrd="/boot/initramfs-$_f"

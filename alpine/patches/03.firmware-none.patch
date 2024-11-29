@@ -1,0 +1,11 @@
+--- a/scripts/mkimg.base.sh	2024-11-29 12:00:17.108939268 -0500
++++ b/scripts/mkimg.base.sh	2024-11-29 10:33:02.000000000 -0500
+@@ -25,7 +25,7 @@
+ section_kernels() {
+ 	local _f _a _pkgs
+ 	for _f in $kernel_flavors; do
+-		_pkgs="linux-$_f linux-firmware wireless-regdb $modloop_addons"
++		_pkgs="linux-$_f linux-firmware-none $modloop_addons"
+ 		for _a in $kernel_addons; do
+ 			_pkgs="$_pkgs $_a-$_f"
+ 		done
