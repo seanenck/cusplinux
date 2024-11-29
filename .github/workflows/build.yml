@@ -37,9 +37,9 @@ jobs:
           echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$IMAGE_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
           cp "$HOME/.abuild/$IMAGE_KEY_NAME.pub" "/etc/apk/keys/"
       - name: "run build"
-        run: just
+        run: cd alpine && just
       - name: "archive outputs"
         uses: actions/upload-artifact@v4
         with:
           name: alpine-image
-          path: 'build/'
+          path: 'alpine/build/'
