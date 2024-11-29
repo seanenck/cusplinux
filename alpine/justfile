@@ -5,7 +5,8 @@ target  := `pwd` / "build/"
 binary  := `pwd` / ".." / "target" / "alpine-image-builder"
 dltargz := target / "files.tar.gz"
 scripts := target / "scripts/"
-url     := "https://gitlab.alpinelinux.org/alpine/aports/-/archive/" + tag + "-stable/aports-" + tag + "-stable.tar.gz?path=scripts"
+url     := "https://gitlab.alpinelinux.org/alpine/aports/-/archive/master/aports-master.tar.gz?path=scripts"
+#url     := "https://gitlab.alpinelinux.org/alpine/aports/-/archive/" + tag + "-stable/aports-" + tag + "-stable.tar.gz?path=scripts"
 
 default: build
 
