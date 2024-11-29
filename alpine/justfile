@@ -5,20 +5,24 @@ target  := `pwd` / "build/"
 binary  := `pwd` / ".." / "target" / "alpine-image-builder"
 dltargz := target / "files.tar.gz"
 scripts := target / "scripts/"
-url     := "https://gitlab.alpinelinux.org/alpine/aports/-/archive/" + tag + "-stable/aports-" + tag + "-stable.tar.gz"
+url     := "https://gitlab.alpinelinux.org/alpine/aports/-/archive/" + tag + "-stable/aports-" + tag + "-stable.tar.gz?path=scripts"
 
 default: build
 
 [no-cd]
 build:
     @just scripts
-    {{binary}} --config builder.toml --arch {{arch}} --version {{version}} --output {{target}} --aports "{{scripts}}"
+    {{binary}} --config builder.toml --arch {{arch}} --version {{version}} --output {{target}} --scripts "{{scripts}}"
 
 scripts:
     @rm -rf {{scripts}}
     @mkdir -p "{{scripts}}"
     @test -e "{{dltargz}}" || wget -O "{{dltargz}}" "{{url}}"
-    @tar xf "{{dltargz}}" --strip-components=1 -C "{{scripts}}"
+    @tar xf "{{dltargz}}" --strip-components=2 -C "{{scripts}}"
+    for f in `ls patches/*`; do \
+        cd "{{target}}"; \
+        patch -p1 -i ../$f || exit 1; \
+    done
 
 clean:
     rm -rf "{{target}}"

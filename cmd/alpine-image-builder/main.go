@@ -39,7 +39,7 @@ type (
 	settings struct {
 		version string
 		arch    string
-		aports  string
+		scripts string
 	}
 )
 
@@ -54,7 +54,7 @@ func run() error {
 	inConfig := flag.String("config", "", "configuration file")
 	debug := flag.Bool("debug", false, "enable debugging")
 	output := flag.String("output", "", "output directory for artifacts")
-	aports := flag.String("aports", "", "path to aports")
+	scripts := flag.String("scripts", "", "path to generation scripts")
 	version := flag.String("version", "", "alpine version to build for")
 	arch := flag.String("arch", "", "architecture to build for")
 	flag.Parse()
@@ -78,7 +78,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	settings := settings{*version, *arch, *aports}
+	settings := settings{*version, *arch, *scripts}
 	defer os.RemoveAll(tmp)
 	if err := cfg.run(isDebug, settings, tmp, to); err != nil {
 		return err
@@ -159,12 +159,11 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 		repositories = append(repositories, "--repository", text.String())
 	}
 
-	aports := filepath.Join(dir, "aports")
-	if err := exec.Command("cp", "-r", settings.aports, aports).Run(); err != nil {
+	copied := filepath.Join(dir, "scripts")
+	if err := exec.Command("cp", "-r", settings.scripts, copied).Run(); err != nil {
 		return err
 	}
-	scripts := filepath.Join(aports, "scripts")
-	profile := filepath.Join(scripts, fmt.Sprintf("mkimg.%s.sh", cfg.Name))
+	profile := filepath.Join(copied, fmt.Sprintf("mkimg.%s.sh", cfg.Name))
 	if err := os.WriteFile(profile, buf.Bytes(), 0o755); err != nil {
 		return err
 	}
@@ -176,18 +175,16 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 		if debug {
 			fmt.Printf("overlay: %s\n", ovl.String())
 		}
-		if err := os.WriteFile(filepath.Join(scripts, fmt.Sprintf("genapkovl-%s.sh", cfg.Name)), ovl.Bytes(), 0o755); err != nil {
+		if err := os.WriteFile(filepath.Join(copied, fmt.Sprintf("genapkovl-%s.sh", cfg.Name)), ovl.Bytes(), 0o755); err != nil {
 			return err
 		}
 	}
 	templating := struct {
 		Definition
-		Aports  string
 		Scripts string
 	}{}
 	templating.Definition = base
-	templating.Scripts = scripts
-	templating.Aports = aports
+	templating.Scripts = copied
 	for _, c := range cfg.PreProcess {
 		var args []string
 		for _, a := range c.Arguments {
@@ -206,11 +203,12 @@ func (cfg Config) run(debug bool, settings settings, dir, to string) error {
 	}
 
 	args := []string{
-		filepath.Join(scripts, "mkimage.sh"),
+		filepath.Join(copied, "mkimage.sh"),
 		"--outdir", to,
 		"--arch", settings.arch,
 		"--profile", cfg.Name,
 		"--tag", rawTag,
+		"--hostkeys",
 	}
 	args = append(args, repositories...)
 	args = append(args, cfg.Source.Arguments...)
