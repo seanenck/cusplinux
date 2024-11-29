@@ -1,8 +1,4 @@
 name = "ttypty"
-architecture = "aarch64"
-tags = [
-  "3.20.3"
-]
 
 preprocess = [
   { call = "sed", arguments = ["-i", "s/echo \"set timeout=1\"/echo \"set timeout=0\"/g", "{{ $.Scripts }}/mkimg.base.sh"] },

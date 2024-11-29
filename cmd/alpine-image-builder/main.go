@@ -3,7 +3,6 @@ package main
 
 import (
 	"bytes"
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -24,20 +23,23 @@ type (
 	}
 	// Config handles input build configurations
 	Config struct {
-		Tags       []string
 		Repository struct {
 			URL          string
 			Repositories []string
 		}
-		Architecture string
-		Name         string
-		Source       struct {
+		Name   string
+		Source struct {
 			Template  string
 			Arguments []string
 			Overlay   string
 		}
 		Variables  map[string]Command
 		PreProcess []Command
+	}
+	settings struct {
+		version string
+		arch    string
+		scripts string
 	}
 )
 
@@ -53,12 +55,13 @@ func run() error {
 	debug := flag.Bool("debug", false, "enable debugging")
 	output := flag.String("output", "", "output directory for artifacts")
 	scripts := flag.String("scripts", "", "path to generation scripts")
+	version := flag.String("version", "", "alpine version to build for")
+	arch := flag.String("arch", "", "architecture to build for")
 	flag.Parse()
 	b, err := os.ReadFile(*inConfig)
 	if err != nil {
 		return err
 	}
-	scriptDir := *scripts
 	cfg := Config{}
 	decoder := toml.NewDecoder(bytes.NewReader(b))
 	md, err := decoder.Decode(&cfg)
@@ -69,22 +72,16 @@ func run() error {
 	if len(undecoded) > 0 {
 		return fmt.Errorf("undecoded fields: %v", undecoded)
 	}
-	did := false
 	isDebug := *debug
 	to := *output
 	tmp, err := os.MkdirTemp("", "alpine-image.")
 	if err != nil {
 		return err
 	}
+	settings := settings{*version, *arch, *scripts}
 	defer os.RemoveAll(tmp)
-	for idx := range cfg.Tags {
-		did = true
-		if err := cfg.run(idx, isDebug, tmp, to, scriptDir); err != nil {
-			return err
-		}
-	}
-	if !did {
-		return errors.New("no tags processed")
+	if err := cfg.run(isDebug, settings, tmp, to); err != nil {
+		return err
 	}
 	return nil
 }
@@ -101,9 +98,8 @@ func simpleTemplate(in string, obj interface{}) (bytes.Buffer, error) {
 	return buf, nil
 }
 
-func (cfg Config) run(idx int, debug bool, dir, to, scripts string) error {
-	var tag string
-	tag = cfg.Tags[idx]
+func (cfg Config) run(debug bool, settings settings, dir, to string) error {
+	tag := settings.version
 	rawTag := tag
 	if strings.Contains(rawTag, ".") {
 		parts := strings.Split(tag, ".")
@@ -136,7 +132,7 @@ func (cfg Config) run(idx int, debug bool, dir, to, scripts string) error {
 		Arch string
 		Tag  string
 	}
-	base := Definition{cfg.Name, cfg.Architecture, tag}
+	base := Definition{cfg.Name, settings.arch, tag}
 	obj := struct {
 		Definition
 		Commands map[string][]string
@@ -164,7 +160,7 @@ func (cfg Config) run(idx int, debug bool, dir, to, scripts string) error {
 	}
 
 	copied := filepath.Join(dir, "scripts")
-	if err := exec.Command("cp", "-r", scripts, copied).Run(); err != nil {
+	if err := exec.Command("cp", "-r", settings.scripts, copied).Run(); err != nil {
 		return err
 	}
 	profile := filepath.Join(copied, fmt.Sprintf("mkimg.%s.sh", cfg.Name))
@@ -209,7 +205,7 @@ func (cfg Config) run(idx int, debug bool, dir, to, scripts string) error {
 	args := []string{
 		filepath.Join(copied, "mkimage.sh"),
 		"--outdir", to,
-		"--arch", cfg.Architecture,
+		"--arch", settings.arch,
 		"--profile", cfg.Name,
 		"--tag", rawTag,
 	}
