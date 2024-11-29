@@ -19,6 +19,12 @@ jobs:
       image: alpine:latest
     steps:
       - uses: actions/checkout@v4
+      - uses: robinraju/release-downloader@v1
+        with:
+          latest: true
+          fileName: 'repository.tar.gz'
+      - name: "unpack repository"
+        run: "tar xf repository.tar.gz && ls"
       - name: "setup go"
         uses: actions/setup-go@v5
         with:
