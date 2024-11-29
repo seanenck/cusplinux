@@ -1,0 +1,25 @@
+ARG release=41
+ARG variant=sericea
+
+FROM quay.io/fedora-ostree-desktops/$variant:$release
+RUN dnf5 upgrade -y && \
+    dnf5 install --setopt=install_weak_deps=False -y \
+    age \
+    alacritty \
+    ripgrep \
+    ShellCheck \
+    git-delta \
+    just \
+    binutils \
+    neovim \
+    distrobox \
+    bat && \
+    dnf5 remove -y \
+    firefox \
+    Thunar \
+    libgsf \
+    toolbox \
+    foot && \
+    find /usr/games /usr/i686-w64-mingw32 /usr/x86_64-w64-mingw32 -type d -empty -delete && \
+    dnf5 clean all && \
+    ostree container commit
