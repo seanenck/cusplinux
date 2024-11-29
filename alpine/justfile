@@ -1,6 +1,7 @@
 binary := `pwd` / ".." / "target" / "alpine-image-builder"
 pwd    := `pwd`
 target := "build"
+admin  := "doas"
 
 default: build
 
@@ -10,7 +11,7 @@ build:
     {{binary}} --config builder.toml --workdir "{{pwd}}" --output "{{target}}"
     
 deps:
-    doas apk add alpine-sdk mtools dosfstools alpine-conf xorriso squashfs-tools grub grub-efi abuild abuild-rootbld mkinitfs-initramfs-cusp
+    {{admin}} apk add alpine-sdk mtools dosfstools alpine-conf xorriso squashfs-tools grub grub-efi abuild abuild-rootbld mkinitfs-initramfs-cusp
 
 clean:
     rm -rf "{{target}}"
