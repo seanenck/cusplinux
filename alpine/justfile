@@ -3,9 +3,9 @@ version := tag + ".3"
 arch    := "aarch64"
 target  := `pwd` / "build/"
 binary  := `pwd` / ".." / "target" / "alpine-image-builder"
-clone   := target / "aports.git"
-scripts := target / "scripts"
-url     := "https://gitlab.alpinelinux.org/alpine/aports"
+dltargz := target / "files.tar.gz"
+scripts := target / "scripts/"
+url     := "https://gitlab.alpinelinux.org/alpine/aports/-/archive/" + tag + "-stable/aports-" + tag + "-stable.tar.gz"
 
 default: build
 
@@ -15,9 +15,10 @@ build:
     {{binary}} --config builder.toml --arch {{arch}} --version {{version}} --output {{target}} --aports "{{scripts}}"
 
 scripts:
-    @mkdir -p "{{target}}"
-    @test -e "{{clone}}" || git clone --depth=1 "{{url}}" "{{clone}}"
-    @cp -r "{{clone}}" "{{scripts}}"
+    @rm -rf {{scripts}}
+    @mkdir -p "{{scripts}}"
+    @test -e "{{dltargz}}" || wget -O "{{dltargz}}" "{{url}}"
+    @tar xf "{{dltargz}}" --strip-components=1 -C "{{scripts}}"
 
 clean:
     rm -rf "{{target}}"
