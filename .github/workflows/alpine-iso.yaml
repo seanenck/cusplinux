@@ -24,7 +24,7 @@ jobs:
           latest: true
           fileName: 'repository.tar.gz'
       - name: "unpack repository"
-        run: "tar xf repository.tar.gz && ls"
+        run: "tar xf repository.tar.gz && apk add --allow-untrusted mkinitfs-initramfs-cusp*"
       - name: "setup go"
         uses: actions/setup-go@v5
         with:
