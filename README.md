@@ -10,7 +10,3 @@ definitions to develop/build a personal alpine iso/image for development
 ## fedora
 
 workstation builds for atomic fedora variants
-
-## src (tools)
-
-various tools to assist in image building

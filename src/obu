@@ -1,0 +1,33 @@
+#!/bin/sh -e
+CONFIG="/etc/obu/env"
+if [ ! -e "$CONFIG" ]; then
+  echo "no $CONFIG found"
+  exit 1
+fi
+
+for DIR in "$OVERLAY_MOUNT" "$OVERLAY_REDIRECT"; do
+  if [ -d "$DIR" ]; then
+    echo "unable to use: $DIR, already exists"
+    exit 1
+  fi
+  mkdir -p "$DIR"
+done
+
+for MODULE in $OVERLAY_MODULES; do
+  modprobe "$MODULE"
+done
+
+mount --bind / "$OVERLAY_REDIRECT"
+mount "$OVERLAY_DEVICE" "$OVERLAY_MOUNT"
+
+UPPER="upperdir"
+WD="workdir"
+ROOTFS="rootfs"
+
+for DIR in $OVERLAY_DIRECTORIES; do
+  OVERLAY="$OVERLAY_MOUNT/$DIR"
+  for SUB in "$UPPER" "$WD" "$ROOTFS"; do
+    mkdir -p "$OVERLAY/$SUB"
+  done
+  mount -t overlay -o "lowerdir=$OVERLAY/$ROOTFS:$OVERLAY_MOUNT/$DIR,upperdir=$OVERLAY/$UPPER,workdir=$OVERLAY/$WD" "overlayfs-$DIR" "/$DIR"
+done
