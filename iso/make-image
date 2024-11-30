@@ -11,7 +11,7 @@ if [ -z "$1" ]; then
 fi
 BUILD="$1"
 test -d "$BUILD"
-WORKDIR="$(mktemp -d -t alpine-image.XXXXXX)"
+WORKDIR="$(mktemp -d -t cusp-image.XXXXXX)"
 trap 'rm -rf $WORKDIR' INT EXIT
 CACHE="$BUILD/cache"
 mkdir -p "$CACHE"
@@ -23,7 +23,7 @@ PROFILE="mkimg.$NAME.sh"
 {
   cat << EOF
 profile_$NAME() {
-  hostname="alpine.$NAME"
+  hostname="cusp.$NAME"
   modloop_sign=yes
   initfs_cmdline="modules=loop,squashfs,sd-mod,usb-storage quiet"
   initfs_features="ata base bootchart cdrom ext4 nvme squashfs usb virtio"
