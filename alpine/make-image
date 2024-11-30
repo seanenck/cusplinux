@@ -15,19 +15,8 @@ trap 'rm -rf $WORKDIR' INT EXIT
 CACHE="$BUILD/cache"
 mkdir -p "$CACHE"
 
-UPSTREAM="$CACHE/scripts.tar.gz"
-if [ ! -e "$UPSTREAM" ]; then
-  wget -O "$UPSTREAM" "https://gitlab.alpinelinux.org/alpine/aports/-/archive/master/aports-master.tar.gz?path=scripts"
-fi
-
+cp -r aports "$WORKDIR/"
 SCRIPTS="$WORKDIR/aports/scripts"
-mkdir -p "$SCRIPTS"
-tar xf "$UPSTREAM" --strip-components=2 -C "$SCRIPTS"
-RUNDIR="$PWD"
-for PATCH in patches/*; do
-  patch -d "$SCRIPTS" -p1 -i "$RUNDIR/$PATCH"
-done
-
 PROFILE="mkimg.$NAME.sh"
 
 {
