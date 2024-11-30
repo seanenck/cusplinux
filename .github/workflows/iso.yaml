@@ -1,4 +1,4 @@
-name: "alpine-iso"
+name: "iso"
 
 on:
   workflow_dispatch:
@@ -31,11 +31,12 @@ jobs:
           echo "$IMAGE_PRIVKEY" > "$HOME/.abuild/$IMAGE_KEY_NAME"
           echo "$IMAGE_PUBKEY" > "$HOME/.abuild/$IMAGE_KEY_NAME.pub"
           echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$IMAGE_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
+          cp "caports/cusp-keys/"*.pub "/etc/apk/keys/"
           cp "$HOME/.abuild/$IMAGE_KEY_NAME.pub" "/etc/apk/keys/"
       - name: "run image build"
-        run: cd alpine && just admin= deps build
+        run: cd iso && just admin= deps build
       - name: "archive outputs"
         uses: actions/upload-artifact@v4
         with:
-          name: alpine-image
-          path: alpine/build/*.iso
+          name: cusp-image
+          path: iso/build/*.iso
