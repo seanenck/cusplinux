@@ -1,6 +1,12 @@
 #!/bin/sh -e
 BUILDDIR="$1"
-PACKAGES="$HOME/.local/packages/"
+CONF="$HOME/.abuild/abuild.conf"
+if [ ! -e "$CONF" ]; then
+  echo "no $CONF"
+  exit 1
+fi
+source "$CONF"
+PACKAGES="$REPOROOT/"
 
 errmsg() {
   echo
