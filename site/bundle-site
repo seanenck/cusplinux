@@ -1,0 +1,38 @@
+#!/bin/sh -e
+BUILDDIR="$1"
+PACKAGES="$HOME/.local/packages/"
+
+errmsg() {
+  echo
+  echo "build failed:"
+  echo $@
+  echo
+  exit 1
+}
+
+if [ -z "$BUILDDIR" ]; then
+  errmsg "build dir required"
+fi
+
+BUILDDIR="$BUILDDIR/contents"
+mkdir -p "$BUILDDIR"
+rsync -avc --delete-after "$PACKAGES" "$BUILDDIR"
+
+DUPLICATES=$(
+  {
+    for FILE in $(find "$BUILDDIR" -type f -name "*.apk"); do
+      DIR="$(dirname "$FILE")"
+      NAME="$(basename "$FILE" | rev | cut -d "-" -f 3- | rev)"
+      echo "$NAME"
+    done
+  } | sort | uniq -d
+)
+
+if [ -n "$DUPLICATES" ]; then
+  echo
+  echo "duplicates detected:"
+  echo "$DUPLICATES" | tr ' ' '\n' | sed 's/^/  - /g'
+  errmsg "unable to post duplicate packages"
+fi
+
+cp assets/* "$BUILDDIR"

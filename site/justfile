@@ -1,0 +1,7 @@
+target := "build"
+
+build:
+    ./bundle-site "{{target}}"
+
+clean:
+    rm -rf "{{target}}"

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 200 200" fill="none">
+<rect width="124" height="124" rx="24" fill="#ac9b9b"/>
+  <path 
+    d="M 60 90 A 150 500 20 0 0 10 50" 
+    stroke="black" stroke-width="8" fill="none"
+  />
+    <path 
+    d="M 110 50 A 150 -900 0 0 0 60 90" 
+    stroke="black" stroke-width="8" fill="none"
+  />
+</svg>
