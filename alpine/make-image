@@ -12,6 +12,8 @@ BUILD="$1"
 test -d "$BUILD"
 WORKDIR="$(mktemp -d -t alpine-image.XXXXXX)"
 trap 'rm -rf $WORKDIR' INT EXIT
+CACHE="$BUILD/cache"
+mkdir -p "$CACHE"
 
 cp -r aports "$WORKDIR/"
 SCRIPTS="$WORKDIR/aports/scripts"
@@ -74,6 +76,7 @@ EOF
 
 (
   cd "$WORKDIR" && "aports/scripts/mkimage.sh" \
+    --workdir "$CACHE" \
     --outdir "$BUILD" \
     --arch "$ARCH" \
     --profile "$NAME" \
