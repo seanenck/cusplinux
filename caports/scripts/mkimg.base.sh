@@ -184,7 +184,7 @@ build_grub_cfg() {
 
 grub_gen_earlyconf() {
 	cat <<- EOF
-	search --no-floppy --set=root --label "alpine-${profile_abbrev:-$PROFILE} $RELEASE $ARCH"
+	search --no-floppy --set=root --label "cusp-${profile_abbrev:-$PROFILE} $RELEASE $ARCH"
 	set prefix=(\$root)/boot/grub
 	EOF
 }
@@ -299,7 +299,7 @@ create_image_iso() {
 			-joliet \
 			-rational-rock \
 			-sysid LINUX \
-			-volid "alpine-${profile_abbrev:-$PROFILE} $RELEASE $ARCH" \
+			-volid "cusp-${profile_abbrev:-$PROFILE} $RELEASE $ARCH" \
 			$_isolinux \
 			$_efiboot \
 			-follow-links \
@@ -331,5 +331,5 @@ profile_base() {
 		kbd-bkeymaps network-extras openntpd openssl openssh
 		tzdata wget tiny-cloud-alpine"
 	apkovl=
-	hostname="alpine"
+	hostname="cusp"
 }
