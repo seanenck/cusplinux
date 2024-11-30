@@ -1,4 +1,4 @@
-image-build
+image-building
 ===
 
 Tooling to support building custom linux images
