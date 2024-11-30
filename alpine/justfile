@@ -1,16 +1,13 @@
-tools  := `pwd` / ".." / "src"
-binary := tools / "target" / "alpine-image-builder"
-pwd    := `pwd`
-target := "build"
+target := `pwd` / "build"
 admin  := "doas"
 
 default: build
 
 [no-cd]
 build:
-    cd "{{tools}}" && just
-    {{binary}} --config configs/build-image.toml --workdir "{{pwd}}" --output "{{target}}"
-    
+    mkdir -p "{{target}}"
+    ./make-image "{{target}}"
+
 deps:
     {{admin}} apk add alpine-sdk mtools dosfstools alpine-conf xorriso squashfs-tools grub grub-efi abuild abuild-rootbld
 

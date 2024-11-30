@@ -1,22 +1,5 @@
-image-build
+tools
 ===
-
-Tooling to support building custom linux images
-
-## alpine
-
-definitions to develop/build a personal alpine iso/image for development
-
-## fedora
-
-workstation builds for atomic fedora variants
-
-## src (tools)
-
-### alpine-image-builder
-
-used by the `alpine/` content to build ISO/rootfs/etc. images. Embeds
-`obu` into the image for usage
 
 ###  obu
 

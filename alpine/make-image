@@ -1,0 +1,83 @@
+#!/bin/sh -e
+NAME="ttypty"
+ARCH="aarch64"
+TAG="3.20"
+VERS="$TAG.3"
+REPO="https://dl-cdn.alpinelinux.org/alpine/v$TAG"
+if [ -z "$1" ]; then
+  echo "builddir required"
+  exit 1
+fi
+BUILD="$1"
+test -d "$BUILD"
+WORKDIR="$(mktemp -d -t alpine-image.XXXXXX)"
+trap 'rm -rf $WORKDIR' INT EXIT
+
+cp -r aports "$WORKDIR/"
+SCRIPTS="$WORKDIR/aports/scripts"
+PROFILE="mkimg.$NAME.sh"
+
+{
+  cat << EOF
+profile_$NAME() {
+  hostname="alpine.$NAME"
+  modloop_sign=yes
+  initfs_cmdline="modules=loop,squashfs,sd-mod,usb-storage quiet"
+  initfs_features="ata base bootchart cdrom ext4 nvme squashfs usb virtio"
+  grub_mod="all_video disk part_gpt part_msdos linux normal configfile search search_label efi_gop fat iso9660 cat echo ls test true help gzio"
+  profile_abbrev="std"
+  image_ext="iso"
+  output_format="iso"
+  title='$NAME'
+  desc='$NAME personal spin iso'
+  kernel_flavors='virt'
+  profile_abbrev='$NAME'
+  arch='$ARCH'
+  kernel_addons=
+  apks="
+    age \
+    alpine-base \
+    alpine-conf \
+    apk-cron \
+    bash \
+    bash-completion \
+    bat \
+    busybox \
+    busybox-mdev-openrc \
+    chrony \
+    curl \
+    delta \
+    dhcpcd \
+    diffutils \
+    doas \
+    docs \
+    e2fsprogs \
+    efm-langserver \
+    file \
+    git \
+    kbd-bkeymaps \
+    kitty-terminfo \
+    make \
+    neovim \
+    openssh \
+    openssl \
+    ripgrep \
+    rsync \
+    shellcheck \
+    tiny-cloud-alpine \
+    tzdata \
+    unzip \
+    wget"
+}
+EOF
+} > "$SCRIPTS/$PROFILE"
+
+(
+  cd "$WORKDIR" && "aports/scripts/mkimage.sh" \
+    --outdir "$BUILD" \
+    --arch "$ARCH" \
+    --profile "$NAME" \
+    --tag "$VERS" \
+    --repository "$REPO/main" \
+    --repository "$REPO/community"
+)
