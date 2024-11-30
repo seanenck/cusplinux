@@ -35,4 +35,33 @@ if [ -n "$DUPLICATES" ]; then
   errmsg "unable to post duplicate packages"
 fi
 
+GENERATED="generated: $(date +%Y-%m-%dT%H:%M:%S)"
+for DIR in $(find "$BUILDDIR" -type d); do
+  DEST="$(echo "$DIR" | sed "s#$BUILDDIR##g")"
+  echo "$DEST"
+  {
+  cat << EOF
+<html>
+<head><title>Index of $DEST</title></head>
+<body bgcolor="white"><h1>Index of $DEST</h1><hr><pre>
+EOF
+  for FILE in "$DIR/"*; do
+    BASE="$(basename "$FILE")"
+    echo "$(stat -c '%y' "$FILE" | cut -d " " -f 1,2 | cut -d "." -f 1)&nbsp;<a href='$BASE'>$BASE</a>"
+
+  done
+  cat << EOF
+</pre><hr>
+<small>$GENERATED</small>
+</body>
+</html>
+EOF
+  } > "$DIR/index.html"
+done
+
 cp assets/* "$BUILDDIR"
+
+
+ZIPTO="$PWD/$1/content.zip"
+rm -f "$ZIPTO"
+(cd "$BUILDDIR" && zip -r "$ZIPTO" .)
