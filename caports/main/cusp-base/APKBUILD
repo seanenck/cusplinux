@@ -1,7 +1,7 @@
 # Maintainer: Sean Enck <sean@ttypty.com>
 pkgname=cusp-base
 pkgver=3.20.3
-pkgrel=3
+pkgrel=4
 pkgdesc="Meta package for minimal cusp base"
 url="https://cusplinux.org"
 arch="noarch"
@@ -24,7 +24,7 @@ nomotd.conf
 "
 
 package() {
-  replaces="alpine-conf chrony-openrc alpine-release"
+  replaces="alpine-conf chrony-openrc alpine-release chrony"
   replaces_priority=900
   install="$pkgname.post-install"
   for file in  \
