@@ -45,7 +45,7 @@ echo "-> signing APKINDEX"
 for DIR in $(find "$BUILDDIR" -type f -name "*.apk" -exec dirname {} \; | sort -u); do
   INDEX="$DIR/APKINDEX.tar.gz"
   rm "$INDEX"
-  (cd "$DIR" && apk index -d $(git describe 2>/dev/null) --output APKINDEX.tar.gz)
+  (cd "$DIR" && apk index -d $(git describe 2>/dev/null) --output APKINDEX.tar.gz *.apk)
   abuild-sign "$INDEX"
 done
 
@@ -53,7 +53,6 @@ echo "-> Generating site content"
 GENERATED="generated: $(date +%Y-%m-%dT%H:%M:%S)"
 for DIR in $(find "$BUILDDIR" -type d); do
   DEST="$(echo "$DIR" | sed "s#$BUILDDIR##g")"
-  echo "$DEST"
   {
   cat << EOF
 <html>
