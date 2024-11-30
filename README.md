@@ -3,17 +3,18 @@ image-build
 
 Tooling to support building custom linux images
 
-## tools
+## alpine
 
-### alpine-image-builder
+definitions to develop/build a personal alpine iso/image for development
 
-used by the `alpine/` content to build ISO/rootfs/etc. images. Embeds
-`obu` into the image for usage
+## fedora
 
-###  obu
+workstation builds for atomic fedora variants
 
-An overlay backup utility to support using overlay backup as a sort of `lbu`
-(alpine tool) system to be able to naively run in memory with a backing store
-that can be committed to for file modifications
+## obu
 
-configurations are in the `obu/` directory
+overlay backing utility for deployment on any linux system
+
+## src (tools)
+
+various tools to assist in image building

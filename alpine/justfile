@@ -1,4 +1,5 @@
-binary := `pwd` / ".." / "target" / "alpine-image-builder"
+tools  := `pwd` / ".." / "src"
+binary := tools / "target" / "alpine-image-builder"
 pwd    := `pwd`
 target := "build"
 admin  := "doas"
@@ -7,7 +8,7 @@ default: build
 
 [no-cd]
 build:
-    cd ../ && just
+    cd "{{tools}}" && just
     {{binary}} --config builder.toml --workdir "{{pwd}}" --output "{{target}}"
     
 deps:
