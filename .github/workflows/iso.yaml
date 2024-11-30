@@ -23,16 +23,16 @@ jobs:
         run: apk add git just doas syslinux
       - name: "setup keys"
         env:
-          IMAGE_PRIVKEY: ${{secrets.ALPINE_IMAGE_RSA_KEY}}
-          IMAGE_PUBKEY: ${{secrets.ALPINE_IMAGE_RSA_KEY_PUBLIC}}
-          IMAGE_KEY_NAME: ${{vars.ALPINE_IMAGE_KEY_NAME}}
+          IMAGE_PRIVKEY: ${{secrets.IMAGE_RSA_KEY}}
+          IMAGE_PUBKEY: ${{secrets.IMAGE_RSA_KEY_PUBLIC}}
+          IMAGE_KEY: ${{vars.IMAGE_KEY_NAME}}
         run: |
           mkdir -p "$HOME/.abuild"
-          echo "$IMAGE_PRIVKEY" > "$HOME/.abuild/$IMAGE_KEY_NAME"
-          echo "$IMAGE_PUBKEY" > "$HOME/.abuild/$IMAGE_KEY_NAME.pub"
-          echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$IMAGE_KEY_NAME\"" > "$HOME/.abuild/abuild.conf"
+          echo "$IMAGE_PRIVKEY" > "$HOME/.abuild/$IMAGE_KEY"
+          echo "$IMAGE_PUBKEY" > "$HOME/.abuild/$IMAGE_KEY.pub"
+          echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$IMAGE_KEY\"" > "$HOME/.abuild/abuild.conf"
           cp "caports/main/cusp-keys/"*.pub "/etc/apk/keys/"
-          cp "$HOME/.abuild/$IMAGE_KEY_NAME.pub" "/etc/apk/keys/"
+          cp "$HOME/.abuild/$IMAGE_KEY.pub" "/etc/apk/keys/"
       - name: "run image build"
         run: cd iso && just admin= deps build
       - name: "archive outputs"

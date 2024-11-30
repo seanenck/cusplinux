@@ -10,8 +10,8 @@ to generate personalized variants.
 ## usage
 
 To use
-1. Set GitHub secrets: `ALPINE_IMAGE_RSA_KEY` and `ALPINE_IMAGE_RSA_KEY_PUBLIC` (from `abuild-keygen`)
-2. Set GitHub variable: `ALPINE_IMAGE_KEY_NAME` to the name of the RSA key (from
+1. Set GitHub secrets: `IMAGE_RSA_KEY` and `IMAGE_RSA_KEY_PUBLIC` (from `abuild-keygen`)
+2. Set GitHub variable: `IMAGE_KEY_NAME` to the name of the RSA key (from
    abuild configuration, this should mirror a local system for debugging)
 3. Update `builder.toml` (specify additional `commands` to inject additional
    key/value pairs into the template)
