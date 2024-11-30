@@ -16,8 +16,8 @@ trap 'rm -rf $WORKDIR' INT EXIT
 CACHE="$BUILD/cache"
 mkdir -p "$CACHE"
 
-cp -r aports "$WORKDIR/"
-SCRIPTS="$WORKDIR/aports/scripts"
+cp -r ../caports "$WORKDIR/"
+SCRIPTS="$WORKDIR/caports/scripts"
 PROFILE="mkimg.$NAME.sh"
 
 {
@@ -87,7 +87,7 @@ EOF
 } > "$SCRIPTS/$PROFILE"
 
 (
-  cd "$WORKDIR" && "aports/scripts/mkimage.sh" \
+  cd "$WORKDIR" && "caports/scripts/mkimage.sh" \
     --workdir "$CACHE" \
     --outdir "$BUILD" \
     --arch "$ARCH" \
