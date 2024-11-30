@@ -37,6 +37,7 @@ profile_$NAME() {
   profile_abbrev='$NAME'
   arch='$ARCH'
   kernel_addons=
+  kernel_cmdline="pkgs=cusp-base,cusp-keys,cusp-conf"
 EOF
   tr '\n' ' ' < "../caports/main/cusp-conf/world" | sed 's/^/  apks="/g;s/ $/"/g'
   echo
