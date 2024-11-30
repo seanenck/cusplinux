@@ -3,7 +3,8 @@ NAME="ttypty"
 ARCH="aarch64"
 TAG="3.20"
 VERS="$TAG.3"
-REPO="https://dl-cdn.alpinelinux.org/alpine/v$TAG"
+CUSP="https://www.cusplinux.org/cusp/v$TAG"
+ALPINE="https://dl-cdn.alpinelinux.org/alpine/v$TAG"
 if [ -z "$1" ]; then
   echo "builddir required"
   exit 1
@@ -48,6 +49,8 @@ profile_$NAME() {
     busybox-mdev-openrc \
     chrony \
     curl \
+    cusp-base \
+    cusp-keys \
     delta \
     dhcpcd \
     diffutils \
@@ -90,6 +93,7 @@ EOF
     --arch "$ARCH" \
     --profile "$NAME" \
     --tag "$VERS" \
-    --repository "$REPO/main" \
-    --repository "$REPO/community"
+    --repository "$ALPINE/main" \
+    --repository "$ALPINE/community" \
+    --repository "$CUSP/main"
 )
