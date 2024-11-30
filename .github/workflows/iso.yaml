@@ -36,14 +36,8 @@ jobs:
           ls "/etc/apk/keys"
       - name: "run image build"
         run: cd iso && just admin= deps build
-      - name: "update current"
-        uses: andelf/nightly-release@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "archive outputs"
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: current
-          name: 'current iso'
-          prerelease: true
-          body: 'current iso build'
-          files: |
-            ./iso/build/*.iso
+          name: cusp-image
+          path: iso/build/*.iso
