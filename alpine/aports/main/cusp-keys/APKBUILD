@@ -1,0 +1,25 @@
+# Maintainer: Sean Enck <sean@ttypty.com>
+pkgname=cusp-keys
+pkgver=0.1
+pkgrel=0
+pkgdesc="Public keys for cusp Linux packages"
+url="https://cusplinux.org"
+arch="noarch"
+license="MIT"
+options="!check" # No testsuite
+source="
+dev@cusplinux.org-674b2f71.rsa.pub
+iso.cusplinux.org.rsa.pub
+"
+
+package() {
+  mkdir -p "$pkgdir"/etc/apk/keys
+  for file in "$srcdir/"*.pub; do
+    install -Dm644 "$file" "$pkgdir"/etc/apk/keys/"$(basename "$file")"
+  done
+}
+
+sha512sums="
+bfaaf53c508700ad2a8505ac55ba2eca62518a2ff3567fbbe1f37700e7f665924f321964deacc175393bbaee72c23cfaa355b5539647a015cfad02b08fea0928  dev@cusplinux.org-674b2f71.rsa.pub
+5fcb3728a6d5fdb1a770bdea47e4bb840c1c22f3073a1604fe4e68e6580eb2f11581bf2b15b634aad44f279b6aa40d5e02ef1e1feb0993450e2f630bc6491e4c  iso.cusplinux.org.rsa.pub
+"

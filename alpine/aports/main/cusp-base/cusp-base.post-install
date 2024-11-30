@@ -1,0 +1,4 @@
+#!/bin/sh
+
+sed -i '#^+home/#d' "/etc/apk/protected_paths.d/lbu.list"
+exit 0

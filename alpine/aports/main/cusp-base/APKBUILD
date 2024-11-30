@@ -1,0 +1,67 @@
+# Maintainer: Sean Enck <sean@ttypty.com>
+pkgname=cusp-base
+pkgver=3.20.3
+pkgrel=3
+pkgdesc="Meta package for minimal cusp base"
+url="https://cusplinux.org"
+arch="noarch"
+license="MIT"
+depends="
+  cusp-keys
+  alpine-base
+  chrony
+  doas
+  openssh
+  openssl
+  openrc
+"
+options="!check"
+source="
+chrony.conf
+chronyd
+lbu.conf
+nomotd.conf
+"
+
+package() {
+  replaces="alpine-conf chrony-openrc alpine-release"
+  replaces_priority=900
+  install="$pkgname.post-install"
+  for file in  \
+      "etc/conf.d/chronyd" \
+      "etc/ssh/sshd_config.d/nomotd.conf" \
+      "etc/chrony/chrony.conf" \
+      "etc/lbu/lbu.conf"; do
+    mkdir -p "$pkgdir/$(dirname "$file")"
+    install -Dm644 "$(basename "$file")" "$pkgdir/$file"
+  done
+
+  echo $pkgver > "$pkgdir"/etc/cusp-release
+  local _ver="$(echo "$pkgver" | grep -E -o '^[0-9]+\.[0-9]+')"
+  local _rel="v$_ver"
+
+  # create /etc/issue
+  cat >"$pkgdir"/etc/issue<<EOF
+Welcome to cusp Linux $_ver
+Kernel \\r on an \\m (\\l)
+
+EOF
+
+	# create os-release
+  mkdir -p "$pkgdir"/usr/lib
+  cat >"$pkgdir"/usr/lib/os-release<<EOF
+NAME="cusp Linux"
+ID=cusp
+VERSION_ID=$pkgver
+PRETTY_NAME="cusp Linux $_rel"
+HOME_URL="https://cusplinux.org/"
+EOF
+  ln -s ../usr/lib/os-release "$pkgdir"/etc/os-release
+}
+
+sha512sums="
+1ac411177e72e723467e388014bf32db7f934ff59ef8095737aa931c825a9844e9057d1058e1a11a032b069083f0ac238ddf9c1385af17c706dd7bb58b30dc62  chrony.conf
+0eaa33c73c0694dd4048d95c8e7759e9d1d6382171bd338f3010efb66ed2399deb587403d1a905e16548b58a9386d40e3b985aeec37d2f053bd5a815af2d92c8  chronyd
+432866381909775ae20e70919b4879e0605d05bb23f4ff39afd81e98c34ea5fd376f6dd4e38284a3cc2ac45d2afc6d60ce3ff7478e3d69806c3ce8da1dadc587  lbu.conf
+d344ce3c5b4512b2f0e7c7b215b2063ab1af870797a03d2bc7c90636f72c069c837e02f02f875d36b91358c2750c7c510b154c2857b8e6ac89ef773e875c6d24  nomotd.conf
+"
