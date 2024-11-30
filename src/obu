@@ -20,14 +20,19 @@ done
 mount --bind / "$OVERLAY_REDIRECT"
 mount "$OVERLAY_DEVICE" "$OVERLAY_MOUNT"
 
-UPPER="upperdir"
-WD="workdir"
-ROOTFS="rootfs"
 
 for DIR in $OVERLAY_DIRECTORIES; do
   OVERLAY="$OVERLAY_MOUNT/$DIR"
-  for SUB in "$UPPER" "$WD" "$ROOTFS"; do
-    mkdir -p "$OVERLAY/$SUB"
+  UPPER="$OVERLAY/upperdir"
+  WD="$OVERLAY/workdir"
+  ROOTFS="$OVERLAY/rootfs"
+  for SUB in "$UPPER" "$WD"; do
+    if [ -d "$SUB" ]; then
+      rm -rf "$SUB"
+    fi
   done
-  mount -t overlay -o "lowerdir=$OVERLAY/$ROOTFS:$OVERLAY_MOUNT/$DIR,upperdir=$OVERLAY/$UPPER,workdir=$OVERLAY/$WD" "overlayfs-$DIR" "/$DIR"
+  for SUB in "$UPPER" "$WD" "$ROOTFS"; do
+    mkdir -p "$SUB"
+  done
+  mount -t overlay -o "lowerdir=$ROOTFS:$OVERLAY_MOUNT/$DIR,upperdir=$UPPER,workdir=$WD" "overlayfs-$DIR" "/$DIR"
 done
