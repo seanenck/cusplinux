@@ -39,8 +39,6 @@ jobs:
           echo "$IMAGE_PUBKEY" > "$HOME/.abuild/$IMAGE_KEY.pub"
           echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$IMAGE_KEY\"" > "$HOME/.abuild/abuild.conf"
           cp "caports/main/cusp-keys/"*.pub "/etc/apk/keys/"
-          cp "$HOME/.abuild/$IMAGE_KEY.pub" "/etc/apk/keys/"
-          ls "/etc/apk/keys"
       - name: "run image build"
         run: cd iso && just admin= deps build
       - name: "archive outputs"
