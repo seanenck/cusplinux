@@ -93,6 +93,7 @@ EOF
     --arch "$ARCH" \
     --profile "$NAME" \
     --tag "$VERS" \
+    --host-keys \
     --repository "$ALPINE/main" \
     --repository "$ALPINE/community" \
     --repository "$CUSP/main"
