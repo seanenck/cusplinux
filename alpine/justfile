@@ -9,7 +9,7 @@ build:
     ./make-image "{{target}}"
 
 deps:
-    {{admin}} apk add alpine-sdk mtools dosfstools alpine-conf xorriso squashfs-tools grub grub-efi abuild abuild-rootbld
+    {{admin}} apk add alpine-sdk mtools dosfstools alpine-conf xorriso squashfs-tools grub grub-efi
 
 clean:
     rm -rf "{{target}}"
