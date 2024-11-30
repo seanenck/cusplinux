@@ -5,7 +5,7 @@ arch = "aarch64"
 
 [variables.world]
 call = "cat"
-arguments = ["world"]
+arguments = ["configs/world"]
 
 [repository]
 url = "https://dl-cdn.alpinelinux.org/alpine/{{ $.Tag }}"

@@ -9,7 +9,7 @@ default: build
 [no-cd]
 build:
     cd "{{tools}}" && just
-    {{binary}} --config builder.toml --workdir "{{pwd}}" --output "{{target}}"
+    {{binary}} --config configs/build-image.toml --workdir "{{pwd}}" --output "{{target}}"
     
 deps:
     {{admin}} apk add alpine-sdk mtools dosfstools alpine-conf xorriso squashfs-tools grub grub-efi abuild abuild-rootbld
