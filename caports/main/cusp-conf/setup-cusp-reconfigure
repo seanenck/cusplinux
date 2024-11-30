@@ -1,0 +1,10 @@
+#!/bin/sh -e
+SHARE="/usr/share/cusp-conf/"
+
+echo "proposed fstab changes"
+echo
+gen-cusp-fstab
+echo
+
+cp "${SHARE}world" "/etc/apk/world"
+cp "${SHARE}lbu.list" "/etc/apk/protected_paths.d/lbu.list"

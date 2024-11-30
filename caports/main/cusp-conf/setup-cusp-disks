@@ -1,0 +1,50 @@
+#!/bin/sh -e
+APKOVL="/media/apkovl"
+APKOVL_DISK=""
+MAIN_DISK=""
+OFFSET=""
+
+while getopts "d:a:" opt ; do
+  case $opt in
+    d) MAIN_DISK="$OPTARG";;
+    a) APKOVL_DISK="$OPTARG";;
+    *)
+      echo "unknown arg: $opt"
+      ;;
+  esac
+done
+
+if [ -z "$APKOVL_DISK" ] || [ -z "$MAIN_DISK" ]; then
+  echo "disk options are required"
+  exit 1
+fi
+
+{
+  echo n
+  echo p
+  echo 1
+  echo  
+  echo  
+  echo w
+} | fdisk "$APKOVL_DISK"
+
+if echo "$APKOVL_DISK" | grep -q "nvme"; then
+  OFFSET="p"
+fi
+
+PART="${APKOVL_DISK}${OFFSET}1"
+mkfs.ext4 "$APKOVL_DISK"
+mkdir -p "$APKOVL"
+mount "$PART" "$APKOVL"
+e2label "$PART" isapkovl
+e2label "$PART"
+
+if echo "$MAIN_DISK" | grep -q "nvme"; then
+  OFFSET="p"
+fi
+
+SWAP="${MAIN_DISK}${OFFSET}1"
+DATA="${MAIN_DISK}${OFFSET}2"
+swapoff "$SWAP"
+mkswap -L isswap "$SWAP"
+e2label "$DATA" isdata
