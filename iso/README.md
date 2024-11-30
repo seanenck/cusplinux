@@ -1,11 +1,11 @@
-alpine
+iso
 ===
 
 Wrapper around Alpine Linux
 [mkimage.sh](https://gitlab.alpinelinux.org/alpine/aports/-/tree/master/scripts?ref_type=heads)
-tooling for creating ISOs/images. Much of the configuration/documentation for Alpine
+local variant for creating ISOs/images. Much of the configuration/documentation for `mkimage.sh`
 Linux ISO/image generation can be abstracted away, which this quick wrapper aims to do
-to generate personalized variants.
+to generate cusp Linux images.
 
 ## usage
 
@@ -17,5 +17,3 @@ To use
    key/value pairs into the template)
 4. Run a build
 5. Files are archived at the end of the action
-
-(can also be run locally, on Alpine, look in `build/`)
