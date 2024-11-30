@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - master
+    paths:
+      - iso/*
+      - caports/scripts/*
     tags:
       - '*'
   pull_request:
