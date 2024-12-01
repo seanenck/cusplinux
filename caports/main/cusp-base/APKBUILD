@@ -26,7 +26,6 @@ nomotd.conf
 package() {
   replaces="alpine-conf chrony-openrc alpine-release chrony"
   replaces_priority=900
-  install="$pkgname.post-install"
   for file in  \
       "etc/conf.d/chronyd" \
       "etc/ssh/sshd_config.d/nomotd.conf" \
