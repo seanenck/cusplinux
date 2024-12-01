@@ -11,11 +11,16 @@ source="
 gen-cusp-fstab.in
 lbu.list
 setup-cusp-disks.in
-setup-cusp-reconfigure.in
+setup-cusp.in
 world
 lib.sh.in
 fstab.conf
+configure
 "
+
+build() {
+  ./configure
+}
 
 package() {
   mkdir -p "$pkgdir"/usr/sbin "$pkgdir"/usr/share/"$pkgname"/

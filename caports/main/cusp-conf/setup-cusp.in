@@ -1,0 +1,24 @@
+#!/bin/sh -e
+SHARE="@SHARE@"
+source "@LIB@"
+
+DIFF=1
+if [ -n "$1" ]; then
+  DIFF=0
+  if [ "$1" != "deploy" ]; then
+    die "invalid argument: $1 ('deploy' or empty => dryrun allowed)"    
+  fi
+fi
+
+if [ "$DIFF" -eq 1 ]; then
+  diff -u <(cat /etc/fstab) <(cat /etc/fstab; gen-cusp-fstab)
+else
+  gen-cusp-fstab >> /etc/fstab
+fi
+
+CMD="diff -u"
+if [ "$DIFF" -eq 0 ]; then
+  CMD="cp"
+fi
+$CMD "${SHARE}/world" "/etc/apk/world"
+$CMD "${SHARE}/lbu.list" "/etc/apk/protected_paths.d"
