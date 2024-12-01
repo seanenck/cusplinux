@@ -1,7 +1,7 @@
 # Maintainer: Sean Enck <sean@ttypty.com>
 pkgname=cusp-base
 pkgver=3.20.3
-pkgrel=4
+pkgrel=5
 pkgdesc="Meta package for minimal cusp base"
 url="https://www.cusplinux.org"
 arch="noarch"
@@ -22,10 +22,10 @@ chronyd
 lbu.conf
 nomotd.conf
 "
+replaces="alpine-conf chrony-openrc alpine-release chrony"
+replaces_priority=900
 
 package() {
-  replaces="alpine-conf chrony-openrc alpine-release chrony"
-  replaces_priority=900
   for file in  \
       "etc/conf.d/chronyd" \
       "etc/ssh/sshd_config.d/nomotd.conf" \
