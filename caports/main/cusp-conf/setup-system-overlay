@@ -6,7 +6,7 @@ if [ -d "$OVERLAY" ]; then
   exit 1 
 fi
 
-apk add arch-chroot
+apk add apk-chroot
 
 if grep "GRUB_CMDLINE_LINUX" "$CONF" | grep -q "overlaytmpfs"; then
   echo "cmdline already set"

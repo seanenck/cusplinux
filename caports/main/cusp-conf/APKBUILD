@@ -1,7 +1,7 @@
 # Maintainer: Sean Enck <sean@ttypty.com>
 pkgname=cusp-conf
 pkgver=0.1
-pkgrel=5
+pkgrel=7
 pkgdesc="cusp configuration templates and scripts"
 url="https://www.cusplinux.org"
 arch="noarch"
@@ -13,20 +13,16 @@ lbu.list
 setup-cusp-disks
 setup-cusp-reconfigure
 world
-99.overlay.sh
-apk-wrapper
 setup-system-overlay
 "
 
 package() {
-  mkdir -p "$pkgdir"/usr/sbin "$pkgdir"/usr/share/"$pkgname"/ "$pkgdir"/etc/profile.d "$pkgdir/usr/lib/cusp-apk/bin"
+  mkdir -p "$pkgdir"/usr/sbin "$pkgdir"/usr/share/"$pkgname"/
   install -Dm644 world "$pkgdir/usr/share/$pkgname/world"
   install -Dm644 lbu.list "$pkgdir/usr/share/$pkgname/lbu.list"
-  install -Dm644 99.overlay.sh "$pkgdir/etc/profile.d/99.overlay.sh"
   for f in "gen-cusp-fstab" "setup-cusp-disks" "setup-cusp-reconfigure" "setup-system-overlay"; do
     install -Dm755 "$f" "$pkgdir/usr/sbin/$f"
   done
-  install -Dm755 apk-wrapper "$pkgdir/usr/lib/cusp-apk/bin/apk"
 }
 
 sha512sums="
@@ -35,7 +31,5 @@ cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0
 f00553909245d7b54b2b00718a09e6431dd0ec9bcc0d4a668ce5aaab3baa285c65cc4114e0d5f16aa263cf933a621ccc8a16504aa40fe07510882d2d7d3f9b4d  setup-cusp-disks
 d411ab905c83207e176c38d64c90ea3541a338de742af282baa4626d3db187ba8b38370dea228bdbf5ee311547512078e67399c9d5c783970b7fe4b8872f3f95  world
 5a8eabcc6ced937cb61c0eac30854088062df4bbef4fa17d3e951b7f14172f1b580a5bb4c9616cb9c9dd818e67f8aae3d12b21a88add97e369d1528d1d1c8a13  setup-cusp-reconfigure
-0a1187abd260e1f3915caf4bab0820f8caca27083ddb86144c1dcf47e81e3fcf828d1bdb0715db077c4a5985a8995947e1953f8a0a1f5d6e5225f88aa2254c5d  99.overlay.sh
-41e9f185b39ff029d75cb5a479314aedb40a08422055cea7ecfc5e23a4390cebccce9143c890ad1ea9cc5db06121ce0ed383a0c2da1bba8589c3178ddf0f6deb  apk-wrapper
-5ee2a50f5ca3c383ad06dc1a7d66ec426e81b1bd88b25b6b989a2eab42633ed0a95441cf1b5e83bd85740acc0123d8b8f3c2d76a1c6e016f1032f98bd3c1d775  setup-system-overlay
+67251acc987ca095c058bd86d20a1af1774d3a264c10107e824270bf867846eb62e3b2a35864e1582e52f2cf669aca174289deb7baf84910a2fd5014a8cdc3a8  setup-system-overlay
 "
