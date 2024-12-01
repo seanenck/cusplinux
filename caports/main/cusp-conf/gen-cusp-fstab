@@ -1,5 +1,6 @@
 #!/bin/sh -e
-VIRTIO="Workspace Downloads Documents Active Env"
+# NOTE: how else to get names of interest...there currently is none
+VIRTIO="Workspace Downloads Documents Active Env Linux"
 
 USER=""
 while getopts "u:" opt ; do
