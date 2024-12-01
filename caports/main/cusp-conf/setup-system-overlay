@@ -1,0 +1,34 @@
+#!/bin/sh -e
+OVERLAY="/media/root-ro"
+SBCONF=/etc/kernel-hooks.d/secureboot.conf
+MKINIT=/etc/mkinitfs/mkinitfs.conf
+if [ -d "$OVERLAY" ]; then
+  echo "$OVERLAY already setup"
+  exit 1 
+fi
+
+apk add secureboot-hook gummiboot-efistub efibootmgr
+
+if grep "^cmdline" "$SBCONF" | grep -q "overlaytmpfs"; then
+  echo "cmdline already set"
+else
+  echo "updating cmdline"
+  CMDLINE=$(cat /proc/cmdline)
+  sed -i "s#^cmdline=.*$#cmdline='$CMDLINE overlaytmpfs'#" "$SBCONF"
+fi
+
+apk fix kernel-hooks
+
+DISABLE="disable_trigger=yes"
+if grep -q "^$DISABLE" "$MKINIT"; then
+  echo "mkinitfs trigger disabled"
+else
+  echo "disabling mkinitfs trigger"
+  echo "$DISABLE" >> "$MKINIT"
+fi
+
+if [ -n "$1" ]; then
+  efibootmgr --disk "$1" --part 1 --create --label 'cusp Linux' --load /Alpine/linux-lts.efi --verbose
+else
+  echo "not setting bootmgr, no device given"
+fi
