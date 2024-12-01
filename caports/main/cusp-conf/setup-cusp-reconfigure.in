@@ -1,4 +1,9 @@
 #!/bin/sh -e
+CONF=@CONFIG@
+if [ ! -e "$CONF" ]; then
+  echo "no config: $CONF"
+  exit 1
+fi
 SHARE="/usr/share/cusp-conf/"
 
 echo "proposed fstab changes"

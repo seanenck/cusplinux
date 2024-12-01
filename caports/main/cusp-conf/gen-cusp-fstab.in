@@ -1,0 +1,63 @@
+#!/bin/sh -e
+source "@LIB@"
+source "@CONF@"
+
+_options() {
+  {
+    echo "$1" | grep "^$2:" | cut -d ":" -f 2-
+    echo "$3"
+  } | head -n 1
+}
+
+gen_fstab_line() {
+  if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
+    die "invalid fstab line, bad settings? $*"
+  fi
+  printf "%-15s %-25s %-10s %5s\n" "$1" "$2" "$3" "$4"
+}
+
+if [ "$DO_VIRTIO" -eq 1 ]; then
+  USER_HOME=$(get_user_home)
+  for VIRT in $VIRTIO_TAGS; do
+    if grep "^$VIRT" -q /etc/fstab; then
+      continue
+    fi
+    FLAGS=$(_options "$VIRTIO_TAG_FLAGS" "${VIRT}" "$VIRTIO_FLAGS")
+    MOUNT=$(_options "$VIRTIO_TAG_MOUNTS" "${VIRT}" "$USER_HOME/$VIRT")
+    gen_fstab_line "$VIRT" "$MOUNT" virtiofs "$FLAGS"
+  done
+fi
+
+if [ "$DO_DISK_LABELS" -eq 1 ]; then
+  for LABEL in /dev/disk/by-label/"$DISK_LABEL_SELECTOR"*; do
+    BASE="$(basename "$LABEL")"
+    PREFIX="LABEL=$BASE"
+    if grep "^$PREFIX" -q /etc/fstab; then
+      continue
+    fi
+    MOUNTPOINT=""
+    FSTYPE="$DISK_DEFAULT_FSTYPE"
+    OPTIONS="$DISK_DEFAULT_FLAGS"
+    case "$BASE" in
+      "isswap")
+        MOUNTPOINT=swap
+        FSTYPE="swap"
+        ;;
+      "ishome")
+        MOUNTPOINT="/home"
+        ;;
+      "isdata")
+        MOUNTPOINT="/var"
+        OPTIONS="defaults 1 2"
+        ;;
+      "isapkovl")
+        MOUNTPOINT="$(apkovl_media)"
+        OPTIONS="noauto,ro 0 0"
+        ;;
+    esac
+    MOUNTPOINT=$(_options "$DISK_MOUNTS" "$BASE" "$MOUNTPOINT")
+    OPTIONS=$(_options "$DISK_FLAGS" "$BASE" "$OPTIONS")
+    FSTYPE=$(_options "$DISK_FSTYPE" "$BASE" "$FSTYPE")
+    gen_fstab_line "$PREFIX" "$MOUNTPOINT" "$FSTYPE" "$OPTIONS"
+  done 
+fi

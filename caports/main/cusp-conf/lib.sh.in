@@ -1,0 +1,47 @@
+#!/bin/sh
+CONF=@CONFIG@
+LBUCONF=@LBUCONF@
+MEDIA=@MEDIA@
+
+MEDIA="/media"
+LBUCONF="/etc/lbu/lbu.conf"
+CONF=cusp.conf
+
+source "$CONF"
+die() {
+  >&2 echo "$@"
+  exit 1
+}
+
+get_home() {
+  if [ -z "$USE_HOME" ]; then
+    die "no home?"
+  fi
+  echo "$USE_HOME"
+}
+
+get_user_home() {
+  HAS_HOME=$(get_home)
+  USING_USER="$USE_USER"
+  if [ -z "$USING_USER" ]; then
+    if [ -z "$(ls "$HAS_HOME")" ]; then
+      die "unable to detect user in home: $HAS_HOME"
+    fi
+    if [ "$(find "$HAS_HOME" -maxdepth 1 -mindepth 1 | wc -l)" -ne 1 ]; then
+      die "unable to detect users in home, more than one"
+    fi
+    USING_USER=$(ls "$HAS_HOME")
+  fi
+  echo "$HAS_HOME/$USING_USER"
+}
+
+apkovl_media() {
+  if [ ! -e "$LBUCONF" ]; then
+    die "no lbu.conf: $LBUCONF"
+  fi
+  source "$LBUCONF"
+  if [ -z "$LBU_MEDIA" ]; then
+    die "no media?"
+  fi
+  echo "$MEDIA/$LBU_MEDIA"
+}

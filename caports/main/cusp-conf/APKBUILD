@@ -1,12 +1,12 @@
 # Maintainer: Sean Enck <sean@ttypty.com>
 pkgname=cusp-conf
 pkgver=0.2
-pkgrel=0
+pkgrel=1
 pkgdesc="cusp configuration templates and scripts"
-url="https://www.cusplinux.org"
+url="https://github.com/seanenck/cusplinux/tree/master/caports/main/cusp-conf"
 arch="noarch"
-license="MIT"
-options="!check" # No testsuite
+license="GPL-3.0-or-later"
+options="!check"
 source="
 gen-cusp-fstab
 lbu.list
