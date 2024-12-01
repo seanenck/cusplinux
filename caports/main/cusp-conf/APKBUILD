@@ -1,7 +1,7 @@
 # Maintainer: Sean Enck <sean@ttypty.com>
 pkgname=cusp-conf
 pkgver=0.1
-pkgrel=7
+pkgrel=8
 pkgdesc="cusp configuration templates and scripts"
 url="https://www.cusplinux.org"
 arch="noarch"
@@ -31,5 +31,5 @@ cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0
 f00553909245d7b54b2b00718a09e6431dd0ec9bcc0d4a668ce5aaab3baa285c65cc4114e0d5f16aa263cf933a621ccc8a16504aa40fe07510882d2d7d3f9b4d  setup-cusp-disks
 d411ab905c83207e176c38d64c90ea3541a338de742af282baa4626d3db187ba8b38370dea228bdbf5ee311547512078e67399c9d5c783970b7fe4b8872f3f95  world
 5a8eabcc6ced937cb61c0eac30854088062df4bbef4fa17d3e951b7f14172f1b580a5bb4c9616cb9c9dd818e67f8aae3d12b21a88add97e369d1528d1d1c8a13  setup-cusp-reconfigure
-67251acc987ca095c058bd86d20a1af1774d3a264c10107e824270bf867846eb62e3b2a35864e1582e52f2cf669aca174289deb7baf84910a2fd5014a8cdc3a8  setup-system-overlay
+bc5f5f247ad35c5a83358415d5673f88a01ac01e04b560eda3a9a615128258ae43b35b3a88a68fff9072cf7578f1a0d2fae876967040441cddc0febac349c4ed  setup-system-overlay
 "

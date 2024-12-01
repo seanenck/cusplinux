@@ -8,11 +8,11 @@ fi
 
 apk add apk-chroot
 
-if grep "GRUB_CMDLINE_LINUX" "$CONF" | grep -q "overlaytmpfs"; then
+if grep "GRUB_CMDLINE_LINUX_DEFAULT" "$CONF" | grep -q "overlaytmpfs"; then
   echo "cmdline already set"
 else
   echo "updating cmdline"
-  sed -i "s/^GRUB_CMDLINE_LINUX=\"/GRUB_CMDLINE_LINUX=\"overlaytmpfs /g" "$CONF"
+  sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"/GRUB_CMDLINE_LINUX_DEFAULT=\"overlaytmpfs /g" "$CONF"
 fi
 
 grub-mkconfig -o /boot/grub/grub.cfg
