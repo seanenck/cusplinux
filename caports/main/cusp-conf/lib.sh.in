@@ -1,13 +1,9 @@
 #!/bin/sh
-CONF=@CONFIG@
+FSTABCONF=@CONFIG@
 LBUCONF=@LBUCONF@
 MEDIA=@MEDIA@
 
-MEDIA="/media"
-LBUCONF="/etc/lbu/lbu.conf"
-CONF=cusp.conf
-
-source "$CONF"
+source "$FSTABCONF"
 die() {
   >&2 echo "$@"
   exit 1

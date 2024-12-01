@@ -1,6 +1,6 @@
 #!/bin/sh -e
 source "@LIB@"
-source "@CONF@"
+source "@FSTABCONF@"
 
 _options() {
   {

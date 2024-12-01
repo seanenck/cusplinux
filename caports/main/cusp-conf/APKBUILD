@@ -8,11 +8,13 @@ arch="noarch"
 license="GPL-3.0-or-later"
 options="!check"
 source="
-gen-cusp-fstab
+gen-cusp-fstab.in
 lbu.list
-setup-cusp-disks
-setup-cusp-reconfigure
+setup-cusp-disks.in
+setup-cusp-reconfigure.in
 world
+lib.sh.in
+fstab.conf
 "
 
 package() {
