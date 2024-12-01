@@ -28,7 +28,7 @@ else
 fi
 
 if [ -n "$1" ]; then
-  efibootmgr --disk "$1" --part 1 --create --label 'cusp Linux' --load /Alpine/linux-lts.efi --verbose
+  efibootmgr --disk "$1" --part 1 --create --label 'cusp Linux' --load /Alpine/linux-virt.efi --verbose
 else
   echo "not setting bootmgr, no device given"
 fi
