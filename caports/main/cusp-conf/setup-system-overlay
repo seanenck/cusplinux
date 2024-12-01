@@ -14,7 +14,7 @@ if grep "^cmdline" "$SBCONF" | grep -q "overlaytmpfs"; then
 else
   echo "updating cmdline"
   CMDLINE=$(cat /proc/cmdline)
-  sed -i "s#^cmdline=.*$#cmdline='$CMDLINE overlaytmpfs'#" "$SBCONF"
+  sed -i "s#^cmdline=.*\$#cmdline='$CMDLINE overlaytmpfs'#" "$SBCONF"
 fi
 
 apk fix kernel-hooks
