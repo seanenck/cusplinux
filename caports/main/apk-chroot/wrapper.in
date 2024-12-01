@@ -1,4 +1,0 @@
-#!/bin/sh -e
-trap 'mount -o remount,ro /media/root-ro' INT EXIT
-mount -o remount,rw /media/root-ro
-arch-chroot /media/root-ro {CMD} $@
