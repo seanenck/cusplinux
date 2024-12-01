@@ -22,7 +22,7 @@ fi
 
 BUILDDIR="$BUILDDIR/contents"
 mkdir -p "$BUILDDIR"
-rsync -avc --delete-after "$PACKAGES" "$BUILDDIR"
+rsync -avc --delete-after --exclude="*/next/*" "$PACKAGES" "$BUILDDIR"
 
 DUPLICATES=$(
   {
