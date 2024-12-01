@@ -1,20 +1,23 @@
 #!/bin/sh -e
-CONF=@CONFIG@
-if [ ! -e "$CONF" ]; then
-  echo "no config: $CONF"
-  exit 1
-fi
-APKOVL="/media/apkovl"
+source "@LIB@"
+source "@FSTABCONF@"
+
+APKOVL=$(apkovl_media)
+
+_usage() {
+  echo "$0"
+  echo "  -d <data disk>"
+  echo "  -a <apkovl target disk>"
+}
+
 APKOVL_DISK=""
 MAIN_DISK=""
-OFFSET=""
-
 while getopts "d:a:" opt ; do
   case $opt in
     d) MAIN_DISK="$OPTARG";;
     a) APKOVL_DISK="$OPTARG";;
     *)
-      echo "unknown arg: $opt"
+      _usage
       ;;
   esac
 done
@@ -33,23 +36,27 @@ fi
   echo w
 } | fdisk "$APKOVL_DISK"
 
-if echo "$APKOVL_DISK" | grep -q "nvme"; then
-  OFFSET="p"
-fi
 
+_nvme() {
+  if echo "$1"| grep -q "nvme"; then
+    echo p
+  fi
+}
+
+OFFSET=$(_nvme "$APKOVL_DISK")
 PART="${APKOVL_DISK}${OFFSET}1"
 mkfs.ext4 "$APKOVL_DISK"
 mkdir -p "$APKOVL"
 mount "$PART" "$APKOVL"
-e2label "$PART" isapkovl
-e2label "$PART"
+e2label "$PART" "$DISK_IS_APKOVL"
 
 if echo "$MAIN_DISK" | grep -q "nvme"; then
   OFFSET="p"
 fi
 
+OFFSET=$(_nvme "$MAIN_DISK")
 SWAP="${MAIN_DISK}${OFFSET}1"
 DATA="${MAIN_DISK}${OFFSET}2"
 swapoff "$SWAP"
-mkswap -L isswap "$SWAP"
-e2label "$DATA" isdata
+mkswap -L "$DISK_IS_SWAP" "$SWAP"
+e2label "$DATA" "$DISK_IS_DATA"

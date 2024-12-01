@@ -1,7 +1,7 @@
 # Maintainer: Sean Enck <sean@ttypty.com>
 pkgname=cusp-conf
 pkgver=0.2
-pkgrel=1
+pkgrel=2
 pkgdesc="cusp configuration templates and scripts"
 url="https://github.com/seanenck/cusplinux/tree/master/caports/main/cusp-conf"
 arch="noarch"
@@ -23,18 +23,23 @@ build() {
 }
 
 package() {
-  mkdir -p "$pkgdir"/usr/sbin "$pkgdir"/usr/share/"$pkgname"/
-  install -Dm644 world "$pkgdir/usr/share/$pkgname/world"
-  install -Dm644 lbu.list "$pkgdir/usr/share/$pkgname/lbu.list"
-  for f in "gen-cusp-fstab" "setup-cusp-disks" "setup-cusp-reconfigure"; do
-    install -Dm755 "$f" "$pkgdir/usr/sbin/$f"
+  mkdir -p "$pkgdir"/usr/sbin "$pkgdir"/usr/share/"$pkgname"/ "$pkgdir/etc/$pkgname/"
+  for f in world lbu.list "$srcdir/lib.sh"; do
+    install -Dm644 "$f" "$pkgdir/usr/share/$pkgname/$(basename "$f")"
   done
+  for f in "gen-cusp-fstab" "setup-cusp-disks" "setup-cusp"; do
+    install -Dm755 "$srcdir/$f" "$pkgdir/usr/sbin/$(basename "$f")"
+  done
+  install -Dm644 fstab.conf "$pkgdir/etc/$pkgname/fstab.conf"
 }
 
 sha512sums="
+5c8de4362d15fb38f50cbf063aa6046476e6c599f2eac51cfdc793df329366e7a5961d076fe0037a1023245455cb0278e19b47521ff25eb288e5e4ccd6c8dbfa  fstab.conf
+11beaa6d2773fbec8e2b7fca16cda36e24c550a9f04f8e89c9e6d823d16ed8f3b6e62c0781e5ebbd646644c11b103e7d391eb880354666a8126ad44eef8c1d08  gen-cusp-fstab.in
 cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e  lbu.list
-f00553909245d7b54b2b00718a09e6431dd0ec9bcc0d4a668ce5aaab3baa285c65cc4114e0d5f16aa263cf933a621ccc8a16504aa40fe07510882d2d7d3f9b4d  setup-cusp-disks
+7ba422141dae20c6b20fde986fbbfef95aa5b97c54616a5d7060f212d059fc16ac7d8eae04deeb198300e508fb31c0de1da4a1876f928e158565f2a5c9d405db  lib.sh.in
+dd42abca63cf1bba305c0ea3cc85f74b7964c56dc43132007a8ef8eac333345f5be766c9fe577a1bd47dc56003abd2c875c09ab5ddcfd784c2fbc91a694f188e  setup-cusp-disks.in
+842643ca595cafa26d545061f3b394a06679bd99238949401921c2e05d09ed36454ddbd9a5f1337a9295deedc95caf3eaa027de6bc35fd8ba8405d12c2606bff  setup-cusp.in
 d411ab905c83207e176c38d64c90ea3541a338de742af282baa4626d3db187ba8b38370dea228bdbf5ee311547512078e67399c9d5c783970b7fe4b8872f3f95  world
-5a8eabcc6ced937cb61c0eac30854088062df4bbef4fa17d3e951b7f14172f1b580a5bb4c9616cb9c9dd818e67f8aae3d12b21a88add97e369d1528d1d1c8a13  setup-cusp-reconfigure
-ca8c8f15a94d07fef8aee180153bb0622dd4b87de9a595a566a2830c2b4218a82c6aa22591e6d606e2ef9ad0a32267307cd4b2c8cdbccf0c30930f765ce80e8f  gen-cusp-fstab
+fbfc555a69f5f242ce57e1362dbf7afba7a66b51af493580cf6bb1870308a10e354d3eb2fc9c0056fedbb9af1840f21caa9d27360cddcaec0eb14714aa44d635  configure
 "

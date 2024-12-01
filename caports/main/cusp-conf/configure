@@ -1,7 +1,7 @@
 #!/bin/sh -e
 LBUCONF="/etc/lbu/lbu.conf"
-FSTABCONF="/etc/cusp/fstab.conf"
-SHARE="/usr/share/cusp"
+FSTABCONF="/etc/cusp-conf/fstab.conf"
+SHARE="/usr/share/cusp-conf"
 LIB="$SHARE/lib.sh"
 MEDIA="/media"
 

@@ -39,18 +39,18 @@ if [ "$DO_DISK_LABELS" -eq 1 ]; then
     FSTYPE="$DISK_DEFAULT_FSTYPE"
     OPTIONS="$DISK_DEFAULT_FLAGS"
     case "$BASE" in
-      "isswap")
+      "$DISK_IS_SWAP")
         MOUNTPOINT=swap
         FSTYPE="swap"
         ;;
-      "ishome")
+      "${DISK_LABEL_SELECTOR}home")
         MOUNTPOINT="/home"
         ;;
-      "isdata")
+      "$DISK_IS_DATA")
         MOUNTPOINT="/var"
         OPTIONS="defaults 1 2"
         ;;
-      "isapkovl")
+      "$DISK_IS_APKOVL")
         MOUNTPOINT="$(apkovl_media)"
         OPTIONS="noauto,ro 0 0"
         ;;
