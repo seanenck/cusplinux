@@ -1,5 +1,5 @@
 #!/bin/sh -e
-NAME="ttypty"
+NAME="baseline"
 ARCH="aarch64"
 TAG="3.20"
 VERS="$TAG.3"
