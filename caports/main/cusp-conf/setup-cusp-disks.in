@@ -8,6 +8,7 @@ _usage() {
   echo "$0"
   echo "  -d <data disk>"
   echo "  -a <apkovl target disk>"
+  die ""
 }
 
 APKOVL_DISK=""

@@ -11,14 +11,19 @@ if [ -n "$1" ]; then
 fi
 
 if [ "$DIFF" -eq 1 ]; then
-  diff -u <(cat /etc/fstab) <(cat /etc/fstab; gen-cusp-fstab)
+  diff -u <(cat /etc/fstab) <(cat /etc/fstab; gen-cusp-fstab) || true
 else
   gen-cusp-fstab >> /etc/fstab
 fi
 
-CMD="diff -u"
-if [ "$DIFF" -eq 0 ]; then
-  CMD="cp"
-fi
-$CMD "${SHARE}/world" "/etc/apk/world"
-$CMD "${SHARE}/lbu.list" "/etc/apk/protected_paths.d"
+for FILE in "world:/etc/apk" "lbu.list:/etc/apk/protected_paths.d"; do
+  SRC=$(echo "$FILE" | cut -d ":" -f 1)
+  DST=$(echo "$FILE" | cut -d ":" -f 2)
+  DST="$DST/$SRC"
+  SRC="${SHARE}/$SRC"
+  if [ "$DIFF" -eq 1 ]; then
+    diff -u "$SRC" "$DST" || true
+    continue
+  fi
+  cp "$SRC" "$DST"
+done
