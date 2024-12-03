@@ -23,6 +23,7 @@ efm-langserver
 file
 git
 kbd-bkeymaps
+just
 kitty-terminfo
 make
 neovim
@@ -32,14 +33,6 @@ ripgrep
 rsync
 shellcheck
 tiny-cloud-alpine
-tree-sitter
-tree-sitter-bash
-tree-sitter-go
-tree-sitter-go-mod
-tree-sitter-json
-tree-sitter-lua
-tree-sitter-python
-tree-sitter-toml
 tzdata
 unzip
 wget
