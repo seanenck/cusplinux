@@ -16,18 +16,6 @@ gen_fstab_line() {
   printf "%-15s %-25s %-10s %5s\n" "$1" "$2" "$3" "$4"
 }
 
-if [ "$DO_VIRTIO" -eq 1 ]; then
-  USER_HOME=$(get_user_home)
-  for VIRT in $VIRTIO_TAGS; do
-    if grep "^$VIRT" -q /etc/fstab; then
-      continue
-    fi
-    FLAGS=$(_options "$VIRTIO_TAG_FLAGS" "${VIRT}" "$VIRTIO_FLAGS")
-    MOUNT=$(_options "$VIRTIO_TAG_MOUNTS" "${VIRT}" "$USER_HOME/$VIRT")
-    gen_fstab_line "$VIRT" "$MOUNT" virtiofs "$FLAGS"
-  done
-fi
-
 if [ "$DO_DISK_LABELS" -eq 1 ]; then
   for LABEL in /dev/disk/by-label/"$DISK_LABEL_SELECTOR"*; do
     BASE="$(basename "$LABEL")"
@@ -60,4 +48,16 @@ if [ "$DO_DISK_LABELS" -eq 1 ]; then
     FSTYPE=$(_options "$DISK_FSTYPE" "$BASE" "$FSTYPE")
     gen_fstab_line "$PREFIX" "$MOUNTPOINT" "$FSTYPE" "$OPTIONS"
   done 
+fi
+
+if [ "$DO_VIRTIO" -eq 1 ]; then
+  USER_HOME=$(get_user_home)
+  for VIRT in $VIRTIO_TAGS; do
+    if grep "^$VIRT" -q /etc/fstab; then
+      continue
+    fi
+    FLAGS=$(_options "$VIRTIO_TAG_FLAGS" "${VIRT}" "$VIRTIO_FLAGS")
+    MOUNT=$(_options "$VIRTIO_TAG_MOUNTS" "${VIRT}" "$USER_HOME/$VIRT")
+    gen_fstab_line "$VIRT" "$MOUNT" virtiofs "$FLAGS"
+  done
 fi
