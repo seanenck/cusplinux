@@ -11,7 +11,7 @@ source="
 gen-cusp-fstab.in
 lbu.list
 setup-cusp-disks.in
-setup-cusp.in
+setup-cusp-files.in
 world
 lib.sh.in
 fstab.conf
@@ -27,7 +27,7 @@ package() {
   for f in world lbu.list "$srcdir/lib.sh"; do
     install -Dm644 "$f" "$pkgdir/usr/share/$pkgname/$(basename "$f")"
   done
-  for f in "gen-cusp-fstab" "setup-cusp-disks" "setup-cusp"; do
+  for f in "gen-cusp-fstab" "setup-cusp-disks" "setup-cusp-files"; do
     install -Dm755 "$srcdir/$f" "$pkgdir/usr/sbin/$(basename "$f")"
   done
   install -Dm644 fstab.conf "$pkgdir/etc/$pkgname/fstab.conf"
@@ -39,7 +39,7 @@ sha512sums="
 cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e  lbu.list
 fbfc555a69f5f242ce57e1362dbf7afba7a66b51af493580cf6bb1870308a10e354d3eb2fc9c0056fedbb9af1840f21caa9d27360cddcaec0eb14714aa44d635  configure
 69e2bb3c112db973cd7f3e41138bac46ad66ad4d7e98b23fc8736d6376497ba5f001595fba7386c155d22300ebfbfac1b0d95b3c62565093c49126b0dfd86568  lib.sh.in
-45ac8eb28be78415caa1adb351177de58a4adcd72afef28a6963715bc14473061e6ae3834f8ee866fd17ec61c7e65516e1750206354b7bec87a6b7b344123f11  setup-cusp.in
+45ac8eb28be78415caa1adb351177de58a4adcd72afef28a6963715bc14473061e6ae3834f8ee866fd17ec61c7e65516e1750206354b7bec87a6b7b344123f11  setup-cusp-files.in
 ab95f592039a37691f05e300e7a00525d3bf6ef776f189d17ed5434c75962973d8dcc55bab6cb4fb10935e6b6af2fa2a1ad46f36011a223beb7c8dbb3982ba0a  setup-cusp-disks.in
 126233bfab38609946b86203c7b8856d1a3dda6d91bb3dacc830c0886983f005559473dc4cfe4f4d33d64aa52a2f9ec7deb62d89ad695e84d8ffda4b2f80c6f4  world
 "
