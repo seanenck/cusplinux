@@ -5,6 +5,7 @@ alpine-conf
 apk-cron
 bash
 bash-completion
+bat
 busybox
 busybox-mdev-openrc
 chrony
@@ -12,6 +13,7 @@ curl
 cusp-base
 cusp-conf
 cusp-keys
+delta
 dhcpcd
 diffutils
 doas
@@ -27,6 +29,7 @@ less
 neovim
 openssh
 openssl
+ripgrep
 rsync
 tiny-cloud-alpine
 tzdata

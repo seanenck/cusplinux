@@ -1,8 +1,8 @@
 #!/bin/sh -e
 NAME="baseline"
 ARCH="aarch64"
-TAG="3.20"
-VERS="$TAG.3"
+TAG="3.21"
+VERS="$TAG.0"
 CUSP="https://dl-cdn.cusplinux.org/cusp/v$TAG"
 ALPINE="https://dl-cdn.alpinelinux.org/alpine/v$TAG"
 if [ -z "$1" ]; then

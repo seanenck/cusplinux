@@ -29,7 +29,7 @@ DUPLICATES=$(
     for FILE in $(find "$BUILDDIR" -type f -name "*.apk"); do
       DIR="$(dirname "$FILE")"
       NAME="$(basename "$FILE" | rev | cut -d "-" -f 3- | rev)"
-      echo "$NAME"
+      echo "$DIR/$NAME"
     done
   } | sort | uniq -d
 )
