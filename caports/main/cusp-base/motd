@@ -1,0 +1,10 @@
+Welcome to cusp!
+
+to setup:
+- setup-alpine
+- setup-cusp-disks -d <disk> -a <disk>
+- setup-lbu
+- setup-apkcache
+- lbu ci
+- reboot
+- setup-cusp-files
