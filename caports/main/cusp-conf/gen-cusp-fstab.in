@@ -51,13 +51,15 @@ if [ "$DO_DISK_LABELS" -eq 1 ]; then
 fi
 
 if [ "$DO_VIRTIO" -eq 1 ]; then
-  USER_HOME=$(get_user_home)
-  for VIRT in $VIRTIO_TAGS; do
-    if grep "^$VIRT" -q /etc/fstab; then
-      continue
-    fi
-    FLAGS=$(_options "$VIRTIO_TAG_FLAGS" "${VIRT}" "$VIRTIO_FLAGS")
-    MOUNT=$(_options "$VIRTIO_TAG_MOUNTS" "${VIRT}" "$USER_HOME/$VIRT")
-    gen_fstab_line "$VIRT" "$MOUNT" virtiofs "$FLAGS"
-  done
+  if [ -d "$VIRTIO_SYS" ]; then
+    USER_HOME=$(get_user_home)
+    for VIRT in $(find "$VIRTIO_SYS" -name "$VIRTIO_SYS_TAG" -exec cat {} \; | sort); do
+      if grep "^$VIRT" -q /etc/fstab; then
+        continue
+      fi
+      FLAGS=$(_options "$VIRTIO_TAG_FLAGS" "${VIRT}" "$VIRTIO_FLAGS")
+      MOUNT=$(_options "$VIRTIO_TAG_MOUNTS" "${VIRT}" "$USER_HOME/$VIRT")
+      gen_fstab_line "$VIRT" "$MOUNT" virtiofs "$FLAGS"
+    done
+  fi
 fi
