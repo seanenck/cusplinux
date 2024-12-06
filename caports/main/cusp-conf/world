@@ -23,13 +23,13 @@ git
 kbd-bkeymaps
 kitty-terminfo
 less
-neovim
 openssh
 openssl
 ripgrep
 rsync
 tzdata
 unzip
+vim
 wget
 xz
 zip
