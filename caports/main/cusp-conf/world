@@ -23,7 +23,7 @@ git
 kbd-bkeymaps
 kitty-terminfo
 less
-nvim
+neovim
 openssh
 openssl
 ripgrep
