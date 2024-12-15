@@ -19,7 +19,6 @@ e2fsprogs
 file
 git
 kbd-bkeymaps
-kitty-terminfo
 less
 neovim
 openssh
