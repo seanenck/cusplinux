@@ -17,13 +17,13 @@ docs
 dosfstools
 e2fsprogs
 file
+gcompat
 git
 kbd-bkeymaps
 less
 neovim
 openssh
 openssl
-ripgrep
 rsync
 tzdata
 unzip
