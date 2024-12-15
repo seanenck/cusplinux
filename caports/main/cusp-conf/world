@@ -21,7 +21,6 @@ gcompat
 git
 kbd-bkeymaps
 less
-neovim
 openssh
 openssl
 rsync
