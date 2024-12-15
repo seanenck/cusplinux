@@ -1,0 +1,13 @@
+#!/bin/sh -e
+TARGET="target"
+
+_dl() {
+  curl -L "https://gitlab.alpinelinux.org/alpine/aports/-/raw/master/community/neovim/$1?ref_type=heads"
+}
+
+rm -rf "$TARGET" 
+mkdir -p "$TARGET/"
+
+_dl "APKBUILD" > "$TARGET/APKBUILD"
+_dl "make-tree-sitter-optional.patch" > "$TARGET/make-tree-sitter-optional.patch"
+_dl "nodoc.txt" > "$TARGET/nodoc.txt"

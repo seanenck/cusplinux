@@ -1,0 +1,64 @@
+--- target/APKBUILD	2024-12-15 16:15:05.776011528 -0500
++++ APKBUILD	2024-12-15 16:08:10.538999635 -0500
+@@ -31,8 +31,7 @@
+ 	ppc64le | riscv64 | s390x | loongarch64) makedepends="$makedepends lua5.1-dev lua5.1-bitop" ;;
+ 	*) makedepends="$makedepends luajit-dev" ;;
+ esac
+-subpackages="$pkgname-lang $pkgname-doc"
+-options="!check" # unit and functional tests fail
++options="net !check" # unit and functional tests fail
+ source="https://github.com/neovim/neovim/archive/v$pkgver/neovim-$pkgver.tar.gz
+ 	make-tree-sitter-optional.patch
+ 	nodoc.txt
+@@ -54,16 +53,8 @@
+ 	esac
+ 
+ 	# DCI_BUILD: See https://github.com/neovim/neovim/issues/22932
+-	cmake -B build -G Ninja \
+-		-DCMAKE_BUILD_TYPE=MinSizeRel \
+-		-DCMAKE_INSTALL_PREFIX=/usr \
+-		-DCMAKE_INSTALL_LIBDIR=lib \
+-		-DENABLE_JEMALLOC=FALSE \
+-		-DENABLE_LTO=TRUE \
+-		-DCMAKE_VERBOSE_MAKEFILE=TRUE \
+-		-DCI_BUILD=OFF \
+-		$cmakeoptions
+-	cmake --build build
++    make CMAKE_BUILD_TYPE=MinSizeRel
++    cpack --config build/CPackConfig.cmake -G TGZ
+ }
+ 
+ check() {
+@@ -74,30 +65,8 @@
+ }
+ 
+ package() {
+-	DESTDIR="$pkgdir" cmake --install build
+-
+-	# Tree-sitter grammars are packaged separately and installed into
+-	# /usr/lib/tree-sitter.
+-	ln -s ../../../lib/tree-sitter "$pkgdir"/usr/share/nvim/runtime/parser
+-}
+-
+-doc() {
+-	default_doc
+-
+-	pkgdesc="$pkgdesc (documentation and help pages)"
+-	replaces="$pkgname"
+-	local docdir="usr/share/nvim/runtime/doc"
+-
+-	mkdir -p "$subpkgdir"/$docdir
+-	mv "$pkgdir"/$docdir/*.txt "$subpkgdir"/$docdir/
+-
+-	# When user execute ":help <pattern>", neovim will open nodoc.txt
+-	# with information why docs are not available and how to install them.
+-	install -D "$srcdir"/nodoc.txt \
+-		"$pkgdir"/$docdir/nodoc.txt
+-	local f; for f in "$subpkgdir/$docdir"/*.txt; do
+-		ln -s nodoc.txt "$pkgdir/$docdir/$(basename $f)"
+-	done
++    mkdir -p "$pkgdir/usr/share/nvim"
++    cp build/nvim-linux64.tar.gz "$pkgdir/usr/share/nvim/"
+ }
+ 
+ sha512sums="
