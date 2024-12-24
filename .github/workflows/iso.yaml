@@ -8,7 +8,7 @@ on:
     paths:
       - iso/*
       - caports/scripts/*
-      - caports/main/cusp-conf/world
+      - caports/main/cusp-base/world
     tags:
       - '*'
   pull_request:

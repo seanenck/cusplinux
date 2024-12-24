@@ -9,7 +9,6 @@ busybox-mdev-openrc
 chrony
 curl
 cusp-base
-cusp-conf
 cusp-keys
 diffutils
 doas
