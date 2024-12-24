@@ -1,7 +1,7 @@
 # Maintainer: Sean Enck <sean@ttypty.com>
 pkgname=cusp-conf
-pkgver=0.2
-pkgrel=2
+pkgver=0.3
+pkgrel=4
 pkgdesc="cusp configuration templates and scripts"
 url="https://github.com/seanenck/cusplinux/tree/master/caports/main/cusp-conf"
 arch="noarch"
@@ -41,5 +41,5 @@ fbfc555a69f5f242ce57e1362dbf7afba7a66b51af493580cf6bb1870308a10e354d3eb2fc9c0056
 9cd8aa17874750561b54a5b76a17470e62a64b6c7baa58257ace43f68d481bee9748946ec46ddc9c27d750f5f7f51cd666b2ddc47c0b738078277fce7ccfb481  fstab.conf
 ec10aebe9177af174f660e161047e8e0efdf483c43d8fea06ee8adafa93e4eab5a42c4b37e91c432b3b72dea1750de433aa0470ed83c5d68a067393f7f847c4c  gen-cusp-fstab.in
 e454b4ad877f215ee5576eeba9b01bc6aca2f7a35d7a36c52a39e1cfbb1bc1094da65d878084435842246b631a46721dec1cd584ad63e6b962ba2ade480c3168  setup-cusp-disks.in
-aad17470c617e5a036242a8e1b8236e3db765eebe764408c694412a55d0d7755b3942521d77b9ab31100d07f41e5b9591fbccba2e8cc972e34d42f76a797ab53  world
+f1e7940695c78c40c2e4c5a45e4f19e0e76f29301ddb1f5c37b70715af546c6f32336e9f32d02807778a418b70ce3ae11e3825d57fd16ff177e7dea2740f3744  world
 "
