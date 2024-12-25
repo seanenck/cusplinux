@@ -182,9 +182,13 @@ build_grub_cfg() {
 	grub_gen_config > "${DESTDIR}"/$grub_cfg
 }
 
+gen_volid() {
+	printf "%s" "cusp-${profile_abbrev:-$PROFILE} ${RELEASE%_rc*} $ARCH" | cut -c1-32
+}
+
 grub_gen_earlyconf() {
 	cat <<- EOF
-	search --no-floppy --set=root --label "cusp-${profile_abbrev:-$PROFILE} $RELEASE $ARCH"
+	search --no-floppy --set=root --label "$(gen_volid)"
 	set prefix=(\$root)/boot/grub
 	EOF
 }
@@ -280,7 +284,7 @@ create_image_iso() {
 		grub-mkrescue --output ${ISO} ${DESTDIR} -follow-links \
 			--directory="$WORKDIR"/usr/lib/grub/powerpc-ieee1275 \
 			-sysid LINUX \
-			-volid "alpine-${profile_abbrev:-$PROFILE} $RELEASE $ARCH"
+			-volid "$(gen_volid)"
 	else
 		if [ "$ARCH" = s390x ]; then
 			printf %s "$initfs_cmdline $kernel_cmdline " > ${WORKDIR}/parmfile
@@ -299,7 +303,7 @@ create_image_iso() {
 			-joliet \
 			-rational-rock \
 			-sysid LINUX \
-			-volid "cusp-${profile_abbrev:-$PROFILE} $RELEASE $ARCH" \
+			-volid "$(gen_volid)" \
 			$_isolinux \
 			$_efiboot \
 			-follow-links \
@@ -326,6 +330,7 @@ profile_base() {
 	esac
 	case "$ARCH" in
 		x86_64) initfs_features="$initfs_features nfit";;
+		arm*|aarch64) initfs_features="$initfs_features phy";;
 	esac
 	apks="alpine-base apk-cron busybox chrony dhcpcd doas e2fsprogs
 		kbd-bkeymaps network-extras openntpd openssl openssh
