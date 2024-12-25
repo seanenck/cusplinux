@@ -47,7 +47,6 @@ jobs:
           name: cusp-image
           path: |
             iso/build/*.iso
-            iso/build/cusp-disks.tar.gz
   upload:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     needs: buildiso
