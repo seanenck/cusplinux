@@ -1,0 +1,32 @@
+name: "iso"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - disks/*
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  builddisks:
+    runs-on: ubuntu-latest
+    name: build
+    container:
+      image: alpine:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: "install base deps"
+        run: apk add e2fsprogs
+      - name: "run image build"
+        run: cd disks && ./generate build
+      - name: "archive outputs"
+        uses: actions/upload-artifact@v4
+        with:
+          name: cusp-image
+          path: disks/build/*.tar.gz
