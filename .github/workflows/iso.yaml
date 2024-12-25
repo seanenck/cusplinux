@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: "install base deps"
-        run: apk add git just doas syslinux e2fsprogs
+        run: apk add git just doas syslinux
       - name: "setup keys"
         env:
           IMAGE_PRIVKEY: ${{secrets.IMAGE_RSA_KEY}}
