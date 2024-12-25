@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: "install base deps"
         run: apk add e2fsprogs
-      - name: "run image build"
+      - name: "run disk image build"
         run: cd disks && ./generate build
       - name: "archive outputs"
         uses: actions/upload-artifact@v4
