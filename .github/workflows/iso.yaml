@@ -44,7 +44,7 @@ jobs:
       - name: "archive outputs"
         uses: actions/upload-artifact@v4
         with:
-          name: cusp-image
+          name: cusp-iso
           path: |
             iso/build/*.iso
   upload:
@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: cusp-image
+          name: cusp-iso
       - name: release
         uses: softprops/action-gh-release@v2
         with:
