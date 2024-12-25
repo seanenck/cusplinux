@@ -39,7 +39,7 @@ profile_$NAME() {
   kernel_addons=
   kernel_cmdline="pkgs=cusp-base,cusp-keys"
 EOF
-  tr '\n' ' ' < "../caports/main/cusp-base/world" | sed 's/^/  apks="/g;s/ $/"/g'
+  tr '\n' ' ' < "../../caports/main/cusp-base/world" | sed 's/^/  apks="/g;s/ $/"/g'
   echo
   echo "}"
 } > "$SCRIPTS/$PROFILE"

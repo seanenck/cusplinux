@@ -6,7 +6,7 @@ on:
     branches:
       - master
     paths:
-      - disks/*
+      - disks/volumes/*
     tags:
       - '*'
   pull_request:
@@ -24,9 +24,9 @@ jobs:
       - name: "install base deps"
         run: apk add e2fsprogs
       - name: "run disk image build"
-        run: cd disks && ./generate build
+        run: cd disks/volumes && ./generate build
       - name: "archive outputs"
         uses: actions/upload-artifact@v4
         with:
           name: cusp-disk-images
-          path: disks/build/*.tar.gz
+          path: disks/volumes/build/*.tar.gz

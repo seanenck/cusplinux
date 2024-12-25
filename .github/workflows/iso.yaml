@@ -6,7 +6,7 @@ on:
     branches:
       - master
     paths:
-      - iso/*
+      - disks/iso/*
       - caports/scripts/*
       - caports/main/cusp-base/world
     tags:
@@ -40,13 +40,13 @@ jobs:
           echo "PACKAGER_PRIVKEY=\"$HOME/.abuild/$IMAGE_KEY\"" > "$HOME/.abuild/abuild.conf"
           cp "caports/main/cusp-keys/"*.pub "/etc/apk/keys/"
       - name: "run iso image build"
-        run: cd iso && just admin= deps build
+        run: cd disks/iso && just admin= deps build
       - name: "archive outputs"
         uses: actions/upload-artifact@v4
         with:
           name: cusp-iso
           path: |
-            iso/build/*.iso
+            disks/iso/build/*.iso
   upload:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     needs: buildiso
