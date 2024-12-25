@@ -7,6 +7,7 @@ default: build
 build:
     mkdir -p "{{target}}"
     ./make-image "{{target}}"
+    ./disks "{{target}}"
 
 deps:
     {{admin}} apk add alpine-sdk mtools dosfstools alpine-conf xorriso squashfs-tools grub grub-efi abuild abuild-rootbld
