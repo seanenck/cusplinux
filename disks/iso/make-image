@@ -16,7 +16,7 @@ trap 'rm -rf $WORKDIR' INT EXIT
 CACHE="$BUILD/cache"
 mkdir -p "$CACHE"
 
-cp -r ../caports "$WORKDIR/"
+cp -r ../../caports "$WORKDIR/"
 SCRIPTS="$WORKDIR/caports/scripts"
 PROFILE="mkimg.$NAME.sh"
 
