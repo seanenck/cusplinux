@@ -9,7 +9,7 @@ SWAP="swap.img"
 USERS="home.img"
 (cd "$TARGET" && dd if=/dev/zero of="$VAR" bs=1G count=3)
 (cd "$TARGET" && dd if=/dev/zero of="$SWAP" bs=1G count=1)
-(cd "$TARGET" && dd if=/dev/zero of="$SWAP" bs=1G count=10)
+(cd "$TARGET" && dd if=/dev/zero of="$USERS" bs=1G count=10)
 (cd "$TARGET" && mkswap -L isswap "$SWAP")
 (cd "$TARGET" && mkfs.ext4 -L isdata "$VAR")
 (cd "$TARGET" && mkfs.ext4 -L ishome "$USERS")
