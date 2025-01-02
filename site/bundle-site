@@ -22,8 +22,16 @@ fi
 
 BUILDDIR="$BUILDDIR/contents"
 mkdir -p "$BUILDDIR"
-rsync -avc --delete-after "$PACKAGES" "cusp.ttypty.com:~/Hosted/"
-rsync -avc --delete-after --exclude="*/next*" "$PACKAGES" "$BUILDDIR"
+
+_rsync() {
+  if ! rsync -avc --delete-after --exclude="*/next*" "$PACKAGES" "$1"; then
+    echo "failed to sync: $PACKAGES -> $1"
+    exit 1
+  fi
+}
+
+_rsync "cusp.ttypty.com:~/Hosted/"
+_rsync "$BUILDDIR"
 
 DUPLICATES=$(
   {
