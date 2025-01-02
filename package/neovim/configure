@@ -1,0 +1,15 @@
+#!/bin/sh -e
+VERS=0.10.3
+TARGET="build"
+
+_dl() {
+  curl -L "https://gitlab.alpinelinux.org/alpine/aports/-/raw/master/community/neovim/$1?ref_type=heads"
+}
+
+rm -rf "$TARGET" 
+mkdir -p "$TARGET/src/"
+
+_dl "make-tree-sitter-optional.patch" > "$TARGET/src/make-tree-sitter-optional.patch"
+cp Makefile.in "$TARGET/src/Makefile"
+curl -L "https://github.com/neovim/neovim/archive/v$VERS/neovim-$VERS.tar.gz" > "$TARGET/src/nvim.tar.gz"
+tar czvf "$TARGET/pkg.tar.gz" -C "$TARGET/src" .

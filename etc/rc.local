@@ -1,0 +1,36 @@
+#!/bin/sh -e
+{
+  echo "state"
+  echo "==="
+  echo
+  for cmd in rsync curl git; do
+    if command -v "$cmd" > /dev/null; then
+      echo "  -> $cmd is missing"
+    fi
+  done
+} > /etc/motd
+if ! df -h / | grep -q overlay; then
+  echo "  -> non-overlay rootfs" >> /etc/motd
+  exit 0
+fi
+
+if ! grep -q 'overlayroot="tmpfs' /etc/overlayroot.conf; then
+  echo "  -> no overlayroot config" >> /etc/motd
+fi 
+
+if ! grep -q "overlayroot=disabled" /etc/grub.d/10_linux; then
+  echo "  -> no grub option to disable overlay" >> /etc/motd
+fi
+
+echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
+sysctl -p >/dev/null
+rm /usr/sbin/overlayroot-chroot
+{
+  echo "#!/bin/sh -e"
+cat << EOF
+/media/root-ro/usr/sbin/overlayroot-chroot grub-editenv /boot/grub/grubenv set next_entry="Maintenance Debian GNU/Linux"
+EOF
+} > /usr/sbin/overlayroot-maintenance
+chmod 755 /usr/sbin/overlayroot-maintenance
+
+echo "  -> overlayroot" >> /etc/motd
