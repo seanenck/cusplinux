@@ -22,6 +22,7 @@ fi
 
 BUILDDIR="$BUILDDIR/contents"
 mkdir -p "$BUILDDIR"
+rsync -avc --delete-after "$PACKAGES" "cusp.ttypty.com:~/Hosted/"
 rsync -avc --delete-after --exclude="*/next*" "$PACKAGES" "$BUILDDIR"
 
 DUPLICATES=$(
