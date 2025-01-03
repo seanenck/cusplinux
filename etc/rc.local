@@ -7,7 +7,6 @@ _motd() {
 {
   echo "state"
   echo "==="
-  echo
 } > /etc/motd
 if ! df -h / | grep -q overlay; then
   _motd "non-overlay rootfs"
