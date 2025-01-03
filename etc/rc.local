@@ -21,6 +21,14 @@ if ! grep -q "overlayroot=disabled" /etc/grub.d/10_linux; then
   _motd "no grub option to disable"
 fi
 
+if ! grep -q '^PollIntervalMinSec=' /etc/systemd/timesyncd.conf; then
+  _motd "no poll min"
+fi
+
+if ! grep -q '^PollIntervalMaxSec=' /etc/systemd/timesyncd.conf; then
+  _motd "no poll min"
+fi
+
 echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
 sysctl -p >/dev/null
 rm /usr/sbin/overlayroot-chroot
