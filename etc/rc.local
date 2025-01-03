@@ -27,9 +27,12 @@ rm /usr/sbin/overlayroot-chroot
 {
   echo "#!/bin/sh -e"
 cat << EOF
+printf "setting maintenance boot..."
+[ "\$(whoami)" = "root" ] || exit 1
 /media/root-ro/usr/sbin/overlayroot-chroot grub-editenv /boot/grub/grubenv set next_entry="Maintenance Debian GNU/Linux"
+echo "success"
 EOF
-} > /usr/sbin/overlayroot-maintenance
-chmod 755 /usr/sbin/overlayroot-maintenance
+} > /usr/bin/overlayroot-maintenance
+chmod 755 /usr/bin/overlayroot-maintenance
 
 _motd "overlayroot"
