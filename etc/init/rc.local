@@ -8,29 +8,14 @@ _motd() {
   echo "state"
   echo "==="
 } > /etc/motd
+
+[ -e "/etc/.overlay.tar.gz" ] && tar xf "/etc/.overlay.tar.gz" -C /etc
+
 if ! df -h / | grep -q overlay; then
   _motd "non-overlay rootfs"
   exit 0
 fi
 
-if ! grep -q 'overlayroot="tmpfs' /etc/overlayroot.conf; then
-  _motd "no overlayroot found"
-fi 
-
-if ! grep -q "overlayroot=disabled" /etc/grub.d/10_linux; then
-  _motd "no grub option to disable"
-fi
-
-if ! grep -q '^PollIntervalMinSec=' /etc/systemd/timesyncd.conf; then
-  _motd "no poll min"
-fi
-
-if ! grep -q '^PollIntervalMaxSec=' /etc/systemd/timesyncd.conf; then
-  _motd "no poll min"
-fi
-
-echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
-sysctl -p >/dev/null
 rm /usr/sbin/overlayroot-chroot
 {
   echo "#!/bin/sh -e"

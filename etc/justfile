@@ -1,0 +1,7 @@
+target  := "build"
+tarfile := target / "etc.tar.gz"
+
+all:
+    mkdir -p "{{target}}"
+    rm -f "{{tarfile}}"
+    tar czvf "{{tarfile}}" -C files .
