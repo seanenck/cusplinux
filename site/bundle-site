@@ -51,4 +51,4 @@ EOF
   } > "$DIR/index.html"
 done
 
-cp assets/* "$BUILDDIR"
+cp -r assets/* "$BUILDDIR"
