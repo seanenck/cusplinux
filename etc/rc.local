@@ -1,25 +1,25 @@
 #!/bin/sh -e
+
+_motd() {
+  echo "  -> $@" >> /etc/motd
+}
+
 {
   echo "state"
   echo "==="
   echo
-  for cmd in rsync curl git; do
-    if command -v "$cmd" > /dev/null; then
-      echo "  -> $cmd is missing"
-    fi
-  done
 } > /etc/motd
 if ! df -h / | grep -q overlay; then
-  echo "  -> non-overlay rootfs" >> /etc/motd
+  _motd "non-overlay rootfs"
   exit 0
 fi
 
 if ! grep -q 'overlayroot="tmpfs' /etc/overlayroot.conf; then
-  echo "  -> no overlayroot config" >> /etc/motd
+  _motd "no overlayroot found"
 fi 
 
 if ! grep -q "overlayroot=disabled" /etc/grub.d/10_linux; then
-  echo "  -> no grub option to disable overlay" >> /etc/motd
+  _motd "no grub option to disable"
 fi
 
 echo "net.ipv6.conf.default.disable_ipv6=1" >> /etc/sysctl.conf
@@ -33,4 +33,4 @@ EOF
 } > /usr/sbin/overlayroot-maintenance
 chmod 755 /usr/sbin/overlayroot-maintenance
 
-echo "  -> overlayroot" >> /etc/motd
+_motd "overlayroot"
