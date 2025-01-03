@@ -1,7 +1,14 @@
 target  := "build"
 tarfile := target / "etc.tar.gz"
+overlay := `df -h / | grep overlay | cut -d " " -f 1`
 
 all:
     mkdir -p "{{target}}"
     rm -f "{{tarfile}}"
     tar czvf "{{tarfile}}" -C files .
+
+deploy:
+    [ -z "{{overlay}}" ] || exit 1
+    [ "$(whoami)" = "root" ] || exit 1
+    cp init/rc.local /etc/rc.local
+    cp "{{tarfile}}" /etc/.overlay.tar.gz
