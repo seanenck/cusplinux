@@ -23,7 +23,9 @@ cat << EOF
 printf "setting maintenance boot..."
 [ "\$(whoami)" = "root" ] || exit 1
 /media/root-ro/usr/sbin/overlayroot-chroot grub-editenv /boot/grub/grubenv set next_entry="Maintenance Debian GNU/Linux"
-echo "success"
+echo "success...rebooting..."
+sleep 3
+reboot
 EOF
 } > /usr/bin/overlayroot-maintenance
 chmod 755 /usr/bin/overlayroot-maintenance
