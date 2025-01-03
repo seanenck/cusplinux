@@ -1,12 +1,6 @@
 #!/bin/sh -e
 BUILDDIR="$1"
-CONF="$HOME/.abuild/abuild.conf"
-if [ ! -e "$CONF" ]; then
-  echo "no $CONF"
-  exit 1
-fi
-source "$CONF"
-PACKAGES="$REPOROOT/"
+PACKAGES="$HOME/.local/packages/"
 
 errmsg() {
   echo
@@ -33,32 +27,6 @@ _rsync() {
 _rsync "cusp.ttypty.com:~/Hosted/"
 _rsync "$BUILDDIR"
 
-DUPLICATES=$(
-  {
-    for FILE in $(find "$BUILDDIR" -type f -name "*.apk"); do
-      DIR="$(dirname "$FILE")"
-      NAME="$(basename "$FILE" | rev | cut -d "-" -f 3- | rev)"
-      echo "$DIR/$NAME"
-    done
-  } | sort | uniq -d
-)
-
-if [ -n "$DUPLICATES" ]; then
-  echo
-  echo "duplicates detected:"
-  echo "$DUPLICATES" | tr ' ' '\n' | sed 's/^/  - /g'
-  errmsg "unable to post duplicate packages"
-fi
-
-echo "-> signing APKINDEX"
-for DIR in $(find "$BUILDDIR" -type f -name "*.apk" -exec dirname {} \; | sort -u); do
-  INDEX="$DIR/APKINDEX.tar.gz"
-  rm "$INDEX"
-  ARCH=$(basename "$DIR")
-  (cd "$DIR" && apk index -d $(git describe 2>/dev/null) --rewrite-arch "$ARCH" --output APKINDEX.tar.gz *.apk)
-  abuild-sign "$INDEX"
-done
-
 echo "-> Generating site content"
 GENERATED="generated: $(date +%Y-%m-%dT%H:%M:%S)"
 for DIR in $(find "$BUILDDIR" -type d); do
@@ -84,8 +52,3 @@ EOF
 done
 
 cp assets/* "$BUILDDIR"
-
-
-ZIPTO="$PWD/$1/content.zip"
-rm -f "$ZIPTO"
-(cd "$BUILDDIR" && zip -r "$ZIPTO" .)
