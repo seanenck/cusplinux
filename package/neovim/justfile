@@ -1,0 +1,10 @@
+import '../justfile'
+pkg := chroot / "root/pkg.tar.gz"
+
+all: build
+    chroot "{{chroot}}" apt-get install build-essential cmake gettext
+    test -e "{{pkg}}" || ./configure "{{pkg}}"
+    test -e "{{chroot}}/root/Makefile" || chroot "{{chroot}}" tar xf /root/pkg.tar.gz -C /root .
+    chroot "{{chroot}}" make -C /root CMAKE_BUILD_TYPE=MinSizeRel
+    chroot "{{chroot}}" /bin/sh -c 'cd /root && cpack --config build/CPackConfig.cmake -G TGZ'
+    cp "{{chroot}}/root/build/nvim-linux64.tar.gz" build/

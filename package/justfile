@@ -1,0 +1,7 @@
+chroot := "/srv/chroot"
+
+build:
+    [ "$(whoami)" = "root" ] || exit 1
+    test -d "{{chroot}}" || mkdir "{{chroot}}"
+    apt install debootstrap
+    test -e "{{chroot}}/etc/os-release" || debootstrap stable "{{chroot}}"

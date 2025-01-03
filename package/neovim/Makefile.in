@@ -1,8 +1,0 @@
-DEPENDS := build-essential cmake git gettext
-
-all:
-	apt-get install $(DEPENDS)
-	cd src && tar xf nvim.tar.gz -C .
-	cd src && git apply *.patch
-	cd src && make CMAKE_BUILD_TYPE=MinSizeRel
-	cd src && cpack --config build/CPackConfig.cmake -G TGZ

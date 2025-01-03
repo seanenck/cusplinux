@@ -9,7 +9,9 @@ _dl() {
 rm -rf "$TARGET" 
 mkdir -p "$TARGET/src/"
 
-_dl "make-tree-sitter-optional.patch" > "$TARGET/src/make-tree-sitter-optional.patch"
-cp Makefile.in "$TARGET/src/Makefile"
 curl -L "https://github.com/neovim/neovim/archive/v$VERS/neovim-$VERS.tar.gz" > "$TARGET/src/nvim.tar.gz"
-tar czvf "$TARGET/pkg.tar.gz" -C "$TARGET/src" .
+(cd "$TARGET/src" && tar xf *.tar.gz)
+mv "$TARGET/src/neovim-$VERS/"* "$TARGET/src/"
+_dl "make-tree-sitter-optional.patch" > "$TARGET/src/make-tree-sitter-optional.patch"
+(cd "$TARGET/src/" && git apply *.patch)
+tar czvf "$1" -C "$TARGET/src" .
